@@ -1,0 +1,114 @@
+.app-layout {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg);
+}
+
+.app-layout-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.shell {
+  flex: 1;
+  min-height: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Harita: dar metin sütunundan geniş, sunuma uygun */
+.shell-map-section {
+  width: 100%;
+  max-width: min(1180px, calc(100vw - 1.5rem));
+  margin: 0 auto;
+  margin-bottom: clamp(1.25rem, 3vw, 2rem);
+  padding: clamp(0.85rem, 2vw, 1.35rem)
+    clamp(0.75rem, 3vw, 2rem) 0;
+}
+
+.shell-map-section:empty {
+  display: none;
+}
+
+.shell-logout {
+  font: inherit;
+  font-size: clamp(0.8125rem, 2.2vw, 0.875rem);
+  font-weight: 600;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--color-primary);
+  background: #ffffff;
+  color: var(--color-primary);
+  cursor: pointer;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition:
+    background 0.15s,
+    color 0.15s,
+    border-color 0.15s;
+}
+
+.shell-logout:hover {
+  background: var(--color-primary);
+  color: #ffffff;
+  border-color: var(--color-primary);
+}
+
+.shell-main {
+  flex: 1;
+  width: 100%;
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: clamp(1.25rem, 4vw, 2rem) clamp(1rem, 4vw, 1.5rem);
+  padding-bottom: max(clamp(1.25rem, 4vw, 2rem), var(--safe-bottom));
+}
+
+.shell-main h1 {
+  margin: 0 0 0.5rem;
+  font-size: clamp(1.25rem, 4.5vw, 1.5rem);
+  word-wrap: break-word;
+}
+
+.shell-lead {
+  margin: 0 0 1rem;
+  color: var(--color-text-muted);
+  line-height: 1.55;
+}
+
+.shell-lead code {
+  font-size: 0.9em;
+  padding: 0.1em 0.3em;
+  border-radius: 4px;
+  background: var(--color-primary-muted);
+  color: var(--color-primary-dark);
+}
+
+.shell-meta {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  word-wrap: break-word;
+}
+
+.shell-main--wide {
+  max-width: min(56rem, 100%);
+}
+
+.shell-meta code {
+  font-size: 0.85em;
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  background: var(--color-primary-muted);
+  color: var(--color-primary-dark);
+  word-break: break-all;
+  overflow-wrap: anywhere;
+}

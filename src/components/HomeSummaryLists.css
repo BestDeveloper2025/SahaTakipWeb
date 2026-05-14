@@ -1,0 +1,151 @@
+.home-summary {
+  width: 100%;
+  margin-top: clamp(0.25rem, 1.5vw, 0.75rem);
+}
+
+.home-summary-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .home-summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.15rem;
+    align-items: start;
+  }
+}
+
+.home-summary-card {
+  padding: 1rem 1.1rem;
+  background: #fff;
+  border: 1px solid rgb(30 118 154 / 0.14);
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgb(15 23 42 / 0.05);
+}
+
+.home-summary-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.home-summary-title {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.home-summary-link {
+  flex-shrink: 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.home-summary-link:hover {
+  text-decoration: underline;
+}
+
+.home-summary-muted {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.home-summary-empty {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--color-text-muted);
+  line-height: 1.45;
+}
+
+.home-summary-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  max-height: min(280px, 42vh);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.home-summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.55rem 0.65rem;
+  text-decoration: none;
+  color: inherit;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+
+.home-summary-item:hover {
+  border-color: rgb(30 118 154 / 0.35);
+  background: rgb(30 118 154 / 0.04);
+}
+
+.home-summary-item-main {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.65rem;
+}
+
+.home-summary-no {
+  font-weight: 800;
+  color: var(--color-primary);
+  font-size: 0.88rem;
+}
+
+.home-summary-machine {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--color-text);
+}
+
+.home-summary-sub {
+  font-size: 0.78rem;
+  color: #64748b;
+}
+
+.home-summary-time {
+  font-size: 0.72rem;
+  color: #94a3b8;
+}
+
+.home-summary-list--plain .home-summary-person {
+  padding: 0.5rem 0.65rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.75rem;
+}
+
+.home-summary-person-name {
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--color-text);
+}
+
+.home-summary-person-tc {
+  font-size: 0.8rem;
+  color: #64748b;
+}

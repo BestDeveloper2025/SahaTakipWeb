@@ -1,0 +1,23 @@
+.svc-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.25rem 0.6rem;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+
+.svc-badge--active {
+  background: rgb(30 118 154 / 0.14);
+  color: var(--color-primary-dark);
+}
+
+.svc-badge--done {
+  background: rgb(22 163 74 / 0.12);
+  color: #15803d;
+}
+
+.svc-badge--idle {
+  background: #f1f5f9;
+  color: #64748b;
+}

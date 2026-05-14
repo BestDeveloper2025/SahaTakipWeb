@@ -1,0 +1,51 @@
+:root {
+  --color-bg: #ffffff;
+  --color-primary: #1e769a;
+  --color-primary-dark: #186480;
+  --color-primary-muted: rgb(30 118 154 / 0.12);
+  --color-text: #1e293b;
+  --color-text-muted: #64748b;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  font-family:
+    system-ui,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background-color: var(--color-bg);
+  overflow-x: clip;
+}
+
+#root {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background-color: var(--color-bg);
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}

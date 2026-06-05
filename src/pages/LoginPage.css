@@ -32,8 +32,52 @@
   letter-spacing: -0.02em;
 }
 
+.login-role-switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem;
+  margin-top: 1.15rem;
+  padding: 0.25rem;
+  border-radius: 10px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+}
+
+.login-role-btn {
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 700;
+  min-height: 42px;
+  padding: 0.5rem 0.75rem;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s,
+    box-shadow 0.15s;
+}
+
+.login-role-btn:hover:not(:disabled):not(.login-role-btn--active) {
+  color: var(--color-text);
+  background: rgb(255 255 255 / 0.55);
+}
+
+.login-role-btn--active {
+  background: #fff;
+  color: var(--color-primary-dark);
+  box-shadow: 0 1px 4px rgb(15 23 42 / 0.08);
+}
+
+.login-role-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
 .login-subtitle {
-  margin: 0.35rem 0 0;
+  margin: 0.85rem 0 0;
   font-size: clamp(0.9rem, 2.5vw, 0.95rem);
   color: var(--color-text-muted);
   font-weight: 500;

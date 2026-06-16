@@ -1,0 +1,258 @@
+.customer-back {
+  display: inline-block;
+  margin-bottom: 14px;
+  color: #2563eb;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.customer-back:hover {
+  text-decoration: underline;
+}
+
+.customer-loading,
+.customer-empty {
+  color: var(--text-muted, #64748b);
+}
+
+.customer-error {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+
+.customer-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.customer-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.customer-order {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #2563eb;
+  background: rgba(37, 99, 235, 0.1);
+  border-radius: 8px;
+  padding: 2px 10px;
+}
+
+.customer-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.customer-card {
+  background: #fff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+}
+
+.customer-card--quota {
+  background: #eff6ff;
+  border-color: rgba(37, 99, 235, 0.25);
+}
+
+.customer-card--exceeded {
+  background: #fef2f2;
+  border-color: #fca5a5;
+}
+
+.customer-card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 12px;
+}
+
+.customer-stat--big {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 12px;
+}
+
+.customer-breakdown {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin: 0;
+}
+
+.customer-breakdown div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.customer-breakdown dt {
+  font-size: 0.8rem;
+  color: var(--text-muted, #64748b);
+}
+
+.customer-breakdown dd {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.customer-quota-note {
+  margin: 12px 0 0;
+  font-weight: 700;
+}
+
+.customer-card--exceeded .customer-quota-note {
+  color: #b91c1c;
+}
+
+.customer-quota-note--ok {
+  color: #15803d !important;
+}
+
+.customer-unbilled {
+  color: #b91c1c;
+  font-weight: 700;
+}
+
+.customer-bill-btn {
+  margin-top: 12px;
+  width: 100%;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff;
+  background: #dc2626;
+  cursor: pointer;
+}
+
+.customer-bill-btn:hover:not(:disabled) {
+  background: #b91c1c;
+}
+
+.customer-bill-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.customer-section {
+  margin-bottom: 26px;
+}
+
+.customer-section-title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0 0 12px;
+  border-bottom: 2px solid rgba(15, 23, 42, 0.08);
+  padding-bottom: 8px;
+}
+
+.customer-section-total {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted, #64748b);
+}
+
+.customer-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.customer-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #fff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+
+.customer-row--clickable {
+  text-decoration: none;
+  color: inherit;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    border-color 0.12s ease;
+}
+
+.customer-row--clickable:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+  border-color: rgba(37, 99, 235, 0.35);
+}
+
+.customer-row--clickable:hover .customer-row-no {
+  color: #2563eb;
+}
+
+.customer-row-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.customer-row-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.customer-row-no {
+  font-weight: 700;
+}
+
+.customer-row-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  color: var(--text-muted, #64748b);
+  font-size: 0.9rem;
+}
+
+.customer-row-desc {
+  margin: 2px 0 0;
+  font-size: 0.9rem;
+  color: #334155;
+}
+
+.customer-duration {
+  flex-shrink: 0;
+  font-weight: 800;
+  font-size: 1rem;
+  color: #2563eb;
+  background: rgba(37, 99, 235, 0.1);
+  border-radius: 10px;
+  padding: 6px 12px;
+}
+
+.customer-row-cta {
+  flex-shrink: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #2563eb;
+}

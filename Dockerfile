@@ -7,7 +7,7 @@ RUN npm ci
 
 COPY . .
 
-ARG VITE_API_BASE=http://77.92.152.65
+ARG VITE_API_BASE=http://77.92.152.65:5173
 ENV VITE_API_BASE=$VITE_API_BASE
 
 RUN npm run build

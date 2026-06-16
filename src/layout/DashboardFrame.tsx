@@ -10,6 +10,8 @@ export function DashboardFrame() {
   const { pathname } = useLocation()
   const servisSection =
     pathname === '/servisler' || pathname.startsWith('/servisler/')
+  const musteriSection =
+    pathname === '/musteriler' || pathname.startsWith('/musteriler/')
 
   useLayoutEffect(() => {
     setHeaderEnd(
@@ -39,6 +41,17 @@ export function DashboardFrame() {
           end
         >
           Servisler
+        </NavLink>
+        <NavLink
+          className={({ isActive }) =>
+            ['app-subnav-link', isActive || musteriSection ? 'active' : '']
+              .filter(Boolean)
+              .join(' ')
+          }
+          to="/musteriler"
+          end
+        >
+          Müşteriler
         </NavLink>
       </nav>
       <Outlet />

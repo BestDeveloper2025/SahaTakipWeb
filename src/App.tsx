@@ -8,6 +8,8 @@ import { AppLayout } from './layout/AppLayout'
 import { DashboardFrame } from './layout/DashboardFrame'
 import { PersonnelFrame } from './layout/PersonnelFrame'
 import { HeaderActionsProvider } from './layout/HeaderActionsContext'
+import { CustomerDetailPage } from './pages/CustomerDetailPage'
+import { CustomersPage } from './pages/CustomersPage'
 import { HomePage } from './pages/HomePage'
 import { LoginPage } from './pages/LoginPage'
 import { PersonnelHomePage } from './pages/PersonnelHomePage'
@@ -31,6 +33,11 @@ export default function App() {
                     <Route
                       path="servisler/:serviceId"
                       element={<ServiceDetailPage />}
+                    />
+                    <Route path="musteriler" element={<CustomersPage />} />
+                    <Route
+                      path="musteriler/:customerId"
+                      element={<CustomerDetailPage />}
                     />
                   </Route>
                 </Route>

@@ -6,11 +6,11 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        # Tarayıcının API istekleri (Nginx üzerinden aynı host)
-        VITE_API_BASE: http://77.92.152.65
+        # Tarayıcının API istekleri (Nginx üzerinden aynı host:port)
+        VITE_API_BASE: http://77.92.152.65:5173
     container_name: sahatakip-web
     restart: unless-stopped
     ports:
-      - "80:80"
+      - "5173:80"
     extra_hosts:
       - "host.docker.internal:host-gateway"

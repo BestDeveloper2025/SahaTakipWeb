@@ -13,6 +13,7 @@ import { CustomersPage } from './pages/CustomersPage'
 import { HomePage } from './pages/HomePage'
 import { LoginPage } from './pages/LoginPage'
 import { PersonnelHomePage } from './pages/PersonnelHomePage'
+import { PersonnelRemoteServicePage } from './pages/personnel/PersonnelRemoteServicePage'
 import { ServiceDetailPage } from './pages/ServiceDetailPage'
 import { ServicesPage } from './pages/ServicesPage'
 import './App.css'
@@ -44,6 +45,10 @@ export default function App() {
                 <Route element={<RequirePersonnel />}>
                   <Route element={<PersonnelFrame />}>
                     <Route path="personel" element={<PersonnelHomePage />} />
+                    <Route
+                      path="personel/uzaktan-servis"
+                      element={<PersonnelRemoteServicePage />}
+                    />
                   </Route>
                 </Route>
               </Route>

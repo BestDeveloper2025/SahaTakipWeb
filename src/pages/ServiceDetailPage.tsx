@@ -11,13 +11,11 @@ import {
   type ServiceDetail,
 } from '../api/service'
 import {
-  getServiceAllExpenses,
   getServiceDailyLogs,
   getServiceDeliveryDetails,
   getServiceWorkReport,
   type ServiceDailyLogItem,
   type ServiceDeliveryDetails,
-  type ServiceExpensesResponse,
   type ServiceWorkReport,
 } from '../api/serviceDetailData'
 import {
@@ -69,18 +67,6 @@ function groupAndSortLogs(
   return Array.from(map.entries())
 }
 
-function formatMoney(amount: number, currency: string): string {
-  try {
-    return new Intl.NumberFormat('tr-TR', {
-      style: 'currency',
-      currency: currency === 'TRY' ? 'TRY' : currency,
-      maximumFractionDigits: 2,
-    }).format(amount)
-  } catch {
-    return `${amount} ${currency}`
-  }
-}
-
 /**
  * API'den gelen "Saat:Dakika" sürelerini (örn. 20:24) okunur Türkçe metne çevirir.
  */
@@ -115,8 +101,6 @@ export function ServiceDetailPage() {
   const [reportUrl, setReportUrl] = useState<string | null>(null)
   const [dailyLogs, setDailyLogs] = useState<ServiceDailyLogItem[]>([])
   const [workReport, setWorkReport] = useState<ServiceWorkReport | null>(null)
-  const [expensesData, setExpensesData] =
-    useState<ServiceExpensesResponse | null>(null)
   const [delivery, setDelivery] = useState<ServiceDeliveryDetails | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -141,7 +125,6 @@ export function ServiceDetailPage() {
     setReportUrl(null)
     setDailyLogs([])
     setWorkReport(null)
-    setExpensesData(null)
     setDelivery(null)
 
     ;(async () => {
@@ -160,7 +143,6 @@ export function ServiceDetailPage() {
           report,
           logs,
           mesai,
-          masraflar,
           teslim,
         ] = await Promise.all([
           getServiceEducationTypes(token, id).catch(() => [] as EducationTypeRef[]),
@@ -170,7 +152,6 @@ export function ServiceDetailPage() {
           getServiceReportUrl(token, id),
           getServiceDailyLogs(token, id),
           getServiceWorkReport(token, id),
-          getServiceAllExpenses(token, id),
           getServiceDeliveryDetails(token, id),
         ])
 
@@ -180,7 +161,6 @@ export function ServiceDetailPage() {
         setReportUrl(report)
         setDailyLogs(logs)
         setWorkReport(mesai)
-        setExpensesData(masraflar)
         setDelivery(teslim)
       } catch (e) {
         if (!cancelled) {
@@ -220,7 +200,7 @@ export function ServiceDetailPage() {
             <div className="detail-loading-spinner" aria-hidden />
             <p className="detail-loading-title">Servis yükleniyor</p>
             <p className="detail-loading-sub">
-              Kayıt, günlükler, mesai, masraflar ve rapor bilgileri alınıyor…
+              Kayıt, günlükler, mesai ve rapor bilgileri alınıyor…
             </p>
           </div>
         </main>
@@ -268,7 +248,6 @@ export function ServiceDetailPage() {
     { key: 'team', label: 'Personel' },
     { key: 'daily', label: 'Günlükler' },
     { key: 'work', label: 'Mesai' },
-    { key: 'expenses', label: 'Masraf' },
     { key: 'delivery', label: 'Teslim / PDF' },
     ...(educationTypes.length > 0 || educationContents.length > 0
       ? [{ key: 'education', label: 'Eğitim' }]
@@ -609,75 +588,6 @@ export function ServiceDetailPage() {
             </div>
           )}
           </div>
-        </section>
-
-        <section
-          id="section-expenses"
-          className="detail-section detail-card"
-          aria-labelledby="expense-heading"
-        >
-          <h2 id="expense-heading" className="detail-h2">
-            Masraflar
-          </h2>
-          <p className="detail-section-lead detail-section-lead--tight">
-            Personelin girdiği harcamalar ve para birimine göre toplamlar.
-          </p>
-          {!expensesData || expensesData.expenses.length === 0 ? (
-            <p className="detail-muted">Kayıtlı masraf yok.</p>
-          ) : (
-            <>
-              <div
-                className="detail-expense-totals"
-                role="status"
-                aria-label="Masraf toplamları"
-              >
-                {expensesData.totals.TRY > 0 ? (
-                  <span className="detail-expense-total-pill">
-                    TRY: {formatMoney(expensesData.totals.TRY, 'TRY')}
-                  </span>
-                ) : null}
-                {expensesData.totals.USD > 0 ? (
-                  <span className="detail-expense-total-pill">
-                    USD: {formatMoney(expensesData.totals.USD, 'USD')}
-                  </span>
-                ) : null}
-                {expensesData.totals.EUR > 0 ? (
-                  <span className="detail-expense-total-pill">
-                    EUR: {formatMoney(expensesData.totals.EUR, 'EUR')}
-                  </span>
-                ) : null}
-              </div>
-              <ul className="detail-expense-list">
-                {expensesData.expenses.map((ex) => (
-                  <li key={ex.id} className="detail-expense-row">
-                    <div className="detail-expense-main">
-                      <span className="detail-expense-amount">
-                        {formatMoney(ex.amount, ex.currency)}
-                      </span>
-                      <span className="detail-expense-desc">{ex.description}</span>
-                    </div>
-                    <div className="detail-expense-meta">
-                      <span>{ex.personnelName || 'Personel'}</span>
-                      {ex.photoUrl ? (
-                        <button
-                          type="button"
-                          className="detail-expense-photo"
-                          onClick={() =>
-                            setImagePreview({
-                              src: ex.photoUrl!,
-                              alt: 'Masraf fişi veya fotoğraf',
-                            })
-                          }
-                        >
-                          Fiş / fotoğraf
-                        </button>
-                      ) : null}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
         </section>
 
         <section

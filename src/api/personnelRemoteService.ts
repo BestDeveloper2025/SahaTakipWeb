@@ -1,4 +1,4 @@
-import { apiPostJson } from './http'
+import { apiPostFormData, apiPostJson } from './http'
 import type { CustomerListItem, CustomerRemoteUsage } from './customers'
 import { getAllCustomers } from './customers'
 
@@ -34,11 +34,23 @@ export async function getRemoteUsage(
 export async function createRemoteService(
   token: string,
   payload: CreateRemoteServicePayload,
+  photos: File[] = [],
 ): Promise<{ message: string }> {
-  return apiPostJson<{ message: string }>(
+  const formData = new FormData()
+  formData.append('personnelID', payload.personnelID)
+  formData.append('customerID', payload.customerID)
+  formData.append('machineName', payload.machineName)
+  formData.append('serviceDescription', payload.serviceDescription)
+  formData.append('date', payload.date)
+  formData.append('startTime', payload.startTime)
+  formData.append('endTime', payload.endTime)
+  for (const photo of photos) {
+    formData.append('photos', photo)
+  }
+  return apiPostFormData<{ message: string }>(
     '/remote-service-request/create',
     token,
-    payload,
+    formData,
   )
 }
 

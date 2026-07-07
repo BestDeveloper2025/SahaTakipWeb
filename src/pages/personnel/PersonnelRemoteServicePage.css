@@ -135,6 +135,55 @@
   cursor: not-allowed;
 }
 
+.personnel-remote-photo-hint {
+  margin: 0 0 10px;
+  font-size: 0.85rem;
+  color: var(--text-muted, #64748b);
+}
+
+.personnel-remote-file-label {
+  display: block;
+}
+
+.personnel-remote-file-input {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+}
+
+.personnel-remote-photo-list {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.personnel-remote-photo-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
+
+.personnel-remote-photo-thumb {
+  width: 88px;
+  height: 88px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+}
+
+.personnel-remote-photo-remove {
+  border: none;
+  background: transparent;
+  color: #b91c1c;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
 .personnel-remote-overlay {
   position: fixed;
   inset: 0;

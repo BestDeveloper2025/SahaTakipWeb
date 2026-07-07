@@ -54,3 +54,23 @@ export async function apiPostJson<T>(
   }
   return data as T
 }
+
+export async function apiPostFormData<T>(
+  path: string,
+  token: string,
+  formData: FormData,
+): Promise<T> {
+  const res = await fetch(apiUrl(path), {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: formData,
+  })
+  const data: unknown = await res.json().catch(() => ({}))
+  if (!res.ok) {
+    throw new Error(parseErrorMessage(data))
+  }
+  return data as T
+}

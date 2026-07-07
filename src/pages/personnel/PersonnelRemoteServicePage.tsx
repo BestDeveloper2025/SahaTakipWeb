@@ -21,11 +21,19 @@ const emptyForm = {
   serviceDescription: '',
 }
 
+const MAX_PHOTOS = 5
+
+type SelectedPhoto = {
+  file: File
+  previewUrl: string
+}
+
 export function PersonnelRemoteServicePage() {
   const { token, userId } = useAuth()
   const [customers, setCustomers] = useState<CustomerListItem[]>([])
   const [customersLoading, setCustomersLoading] = useState(true)
   const [form, setForm] = useState(emptyForm)
+  const [photos, setPhotos] = useState<SelectedPhoto[]>([])
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
@@ -57,7 +65,41 @@ export function PersonnelRemoteServicePage() {
 
   const clearForm = useCallback(() => {
     setForm(emptyForm)
+    setPhotos((prev) => {
+      prev.forEach((p) => URL.revokeObjectURL(p.previewUrl))
+      return []
+    })
   }, [])
+
+  useEffect(() => {
+    return () => {
+      photos.forEach((p) => URL.revokeObjectURL(p.previewUrl))
+    }
+  }, [photos])
+
+  function handlePhotoSelect(files: FileList | null) {
+    if (!files) return
+    const remaining = MAX_PHOTOS - photos.length
+    if (remaining <= 0) {
+      setError(`En fazla ${MAX_PHOTOS} fotoğraf ekleyebilirsiniz`)
+      return
+    }
+    const next = Array.from(files)
+      .slice(0, remaining)
+      .filter((f) => f.type.startsWith('image/'))
+      .map((file) => ({ file, previewUrl: URL.createObjectURL(file) }))
+    if (next.length === 0) return
+    setPhotos((prev) => [...prev, ...next])
+  }
+
+  function removePhoto(index: number) {
+    setPhotos((prev) => {
+      const copy = [...prev]
+      const removed = copy.splice(index, 1)[0]
+      if (removed) URL.revokeObjectURL(removed.previewUrl)
+      return copy
+    })
+  }
 
   const performCreate = useCallback(
     async (request: CreateRemoteServicePayload) => {
@@ -67,7 +109,11 @@ export function PersonnelRemoteServicePage() {
       setError(null)
       setSuccess(null)
       try {
-        await createRemoteService(token, request)
+        await createRemoteService(
+          token,
+          request,
+          photos.map((p) => p.file),
+        )
         setSuccess('Servis başarıyla kaydedildi')
         clearForm()
       } catch (e) {
@@ -78,7 +124,7 @@ export function PersonnelRemoteServicePage() {
         setQuotaWarning(null)
       }
     },
-    [token, clearForm],
+    [token, clearForm, photos],
   )
 
   async function handleSubmit(e: FormEvent) {
@@ -271,6 +317,48 @@ export function PersonnelRemoteServicePage() {
                 rows={5}
               />
             </label>
+          </section>
+
+          <section className="personnel-remote-section">
+            <h2 className="personnel-remote-section-title">Fotoğraflar</h2>
+            <p className="personnel-remote-photo-hint">
+              Opsiyonel — en fazla {MAX_PHOTOS} fotoğraf (JPG, PNG).
+            </p>
+            <label className="personnel-remote-file-label">
+              <span className="personnel-remote-label">Dosya seç</span>
+              <input
+                className="personnel-remote-file-input"
+                type="file"
+                accept="image/*"
+                multiple
+                disabled={photos.length >= MAX_PHOTOS || submitting}
+                onChange={(e) => {
+                  handlePhotoSelect(e.target.files)
+                  e.target.value = ''
+                }}
+              />
+            </label>
+            {photos.length > 0 ? (
+              <ul className="personnel-remote-photo-list">
+                {photos.map((photo, index) => (
+                  <li key={photo.previewUrl} className="personnel-remote-photo-item">
+                    <img
+                      src={photo.previewUrl}
+                      alt={`Seçilen fotoğraf ${index + 1}`}
+                      className="personnel-remote-photo-thumb"
+                    />
+                    <button
+                      type="button"
+                      className="personnel-remote-photo-remove"
+                      onClick={() => removePhoto(index)}
+                      disabled={submitting}
+                    >
+                      Kaldır
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
           </section>
 
           <button

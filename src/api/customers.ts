@@ -33,6 +33,7 @@ export type CustomerRemoteService = {
   endTime: string
   durationMinutes: number
   durationText: string
+  photoUrls?: string[]
 }
 
 export type CustomerTimeTotals = {

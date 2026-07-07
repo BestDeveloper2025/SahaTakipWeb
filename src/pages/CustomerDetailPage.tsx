@@ -9,6 +9,7 @@ import {
   type RemoteBillingRecord,
 } from '../api/customers'
 import { ServiceStatusBadge } from '../components/ServiceStatusBadge'
+import { ImageLightbox } from '../components/ImageLightbox'
 import './CustomerDetailPage.css'
 
 export function CustomerDetailPage() {
@@ -19,6 +20,10 @@ export function CustomerDetailPage() {
   const [loading, setLoading] = useState(true)
   const [recordingBilling, setRecordingBilling] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [imagePreview, setImagePreview] = useState<{
+    src: string
+    alt: string
+  } | null>(null)
 
   const loadData = useCallback(async () => {
     if (!token || !customerId) return
@@ -272,6 +277,25 @@ export function CustomerDetailPage() {
                             {s.serviceDescription}
                           </p>
                         ) : null}
+                        {s.photoUrls && s.photoUrls.length > 0 ? (
+                          <div className="customer-remote-photos">
+                            {s.photoUrls.map((url, index) => (
+                              <button
+                                key={`${s.id}-photo-${index}`}
+                                type="button"
+                                className="customer-remote-photo-btn"
+                                onClick={() =>
+                                  setImagePreview({
+                                    src: url,
+                                    alt: 'Uzaktan servis fotoğrafı',
+                                  })
+                                }
+                              >
+                                <img src={url} alt="" />
+                              </button>
+                            ))}
+                          </div>
+                        ) : null}
                       </div>
                       <span className="customer-duration">{s.durationText}</span>
                     </li>
@@ -282,6 +306,11 @@ export function CustomerDetailPage() {
           </>
         ) : null}
       </main>
+      <ImageLightbox
+        src={imagePreview?.src ?? null}
+        alt={imagePreview?.alt}
+        onClose={() => setImagePreview(null)}
+      />
     </div>
   )
 }

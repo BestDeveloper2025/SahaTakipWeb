@@ -12,6 +12,11 @@ export function DashboardFrame() {
     pathname === '/servisler' || pathname.startsWith('/servisler/')
   const musteriSection =
     pathname === '/musteriler' || pathname.startsWith('/musteriler/')
+  const personelSection =
+    pathname === '/personeller' || pathname.startsWith('/personeller/')
+  const uzaktanSection =
+    pathname === '/uzaktan-servisler' ||
+    pathname.startsWith('/uzaktan-servisler/')
 
   useLayoutEffect(() => {
     setHeaderEnd(
@@ -44,6 +49,17 @@ export function DashboardFrame() {
         </NavLink>
         <NavLink
           className={({ isActive }) =>
+            ['app-subnav-link', isActive || uzaktanSection ? 'active' : '']
+              .filter(Boolean)
+              .join(' ')
+          }
+          to="/uzaktan-servisler"
+          end
+        >
+          Uzaktan Servisler
+        </NavLink>
+        <NavLink
+          className={({ isActive }) =>
             ['app-subnav-link', isActive || musteriSection ? 'active' : '']
               .filter(Boolean)
               .join(' ')
@@ -52,6 +68,17 @@ export function DashboardFrame() {
           end
         >
           Müşteriler
+        </NavLink>
+        <NavLink
+          className={({ isActive }) =>
+            ['app-subnav-link', isActive || personelSection ? 'active' : '']
+              .filter(Boolean)
+              .join(' ')
+          }
+          to="/personeller"
+          end
+        >
+          Personeller
         </NavLink>
       </nav>
       <Outlet />

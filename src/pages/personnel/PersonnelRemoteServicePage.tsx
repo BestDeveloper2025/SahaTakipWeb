@@ -8,6 +8,7 @@ import {
   getCurrentDateDDMMYYYY,
   getPersonnelCustomers,
   getRemoteUsage,
+  QUOTA_EXCEEDED_SUCCESS_MESSAGE,
   type CreateRemoteServicePayload,
   type CustomerListItem,
 } from '../../api/personnelRemoteService'
@@ -40,6 +41,7 @@ export function PersonnelRemoteServicePage() {
   const [quotaWarning, setQuotaWarning] = useState<string | null>(null)
   const [pendingRequest, setPendingRequest] =
     useState<CreateRemoteServicePayload | null>(null)
+  const [pendingQuotaExceeded, setPendingQuotaExceeded] = useState(false)
 
   useEffect(() => {
     if (!token) return
@@ -102,7 +104,10 @@ export function PersonnelRemoteServicePage() {
   }
 
   const performCreate = useCallback(
-    async (request: CreateRemoteServicePayload) => {
+    async (
+      request: CreateRemoteServicePayload,
+      options?: { quotaExceeded?: boolean },
+    ) => {
       if (!token) return
       setQuotaWarning(null)
       setSubmitting(true)
@@ -114,13 +119,18 @@ export function PersonnelRemoteServicePage() {
           request,
           photos.map((p) => p.file),
         )
-        setSuccess('Servis başarıyla kaydedildi')
+        setSuccess(
+          options?.quotaExceeded
+            ? QUOTA_EXCEEDED_SUCCESS_MESSAGE
+            : 'Servis başarıyla kaydedildi',
+        )
         clearForm()
       } catch (e) {
         setError(e instanceof Error ? e.message : 'Kayıt oluşturulamadı')
       } finally {
         setSubmitting(false)
         setPendingRequest(null)
+        setPendingQuotaExceeded(false)
         setQuotaWarning(null)
       }
     },
@@ -175,6 +185,7 @@ export function PersonnelRemoteServicePage() {
       const projectedMinutes = usage.usedMinutes + newEntryMinutes
       if (projectedMinutes > usage.quotaMinutes) {
         setPendingRequest(request)
+        setPendingQuotaExceeded(true)
         setQuotaWarning(
           buildQuotaWarningMessage(
             usage.quotaHours,
@@ -196,11 +207,15 @@ export function PersonnelRemoteServicePage() {
   function dismissQuotaWarning() {
     setQuotaWarning(null)
     setPendingRequest(null)
+    setPendingQuotaExceeded(false)
     setSubmitting(false)
   }
 
   function confirmQuotaWarning() {
-    if (pendingRequest) void performCreate(pendingRequest)
+    if (pendingRequest)
+      void performCreate(pendingRequest, {
+        quotaExceeded: pendingQuotaExceeded,
+      })
   }
 
   return (
@@ -212,8 +227,8 @@ export function PersonnelRemoteServicePage() {
       <header className="personnel-remote-head">
         <h1 className="personnel-remote-title">Uzaktan Servis</h1>
         <p className="personnel-remote-hint">
-          Müşteri için uzaktan servis kaydı oluşturun. Kota aşımında uyarı
-          gösterilir.
+          Müşteri için uzaktan servis kaydı oluşturun. 20 saatlik kota aşımında
+          uyarı gösterilir; kayıt sonrası yöneticinize bilgi vermeniz gerekir.
         </p>
       </header>
 
@@ -228,7 +243,14 @@ export function PersonnelRemoteServicePage() {
       ) : null}
 
       {success ? (
-        <div className="personnel-remote-alert personnel-remote-alert--success" role="status">
+        <div
+          className={
+            success === QUOTA_EXCEEDED_SUCCESS_MESSAGE
+              ? 'personnel-remote-alert personnel-remote-alert--warn'
+              : 'personnel-remote-alert personnel-remote-alert--success'
+          }
+          role="status"
+        >
           {success}
         </div>
       ) : null}

@@ -22,7 +22,13 @@ export function pathAfterLogin(role: AuthRole, from?: string): string {
 }
 
 export function isAdminPath(pathname: string): boolean {
-  return pathname === ADMIN_HOME || pathname.startsWith('/servisler')
+  return (
+    pathname === ADMIN_HOME ||
+    pathname.startsWith('/servisler') ||
+    pathname.startsWith('/uzaktan-servisler') ||
+    pathname.startsWith('/musteriler') ||
+    pathname.startsWith('/personeller')
+  )
 }
 
 export function isPersonnelPath(pathname: string): boolean {

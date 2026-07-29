@@ -102,6 +102,19 @@ export async function getAllCustomers(
   return data as CustomerListItem[]
 }
 
+/** POST /customer/add — mobil `AddCustomerRequest` ile aynı */
+export async function addCustomer(
+  token: string,
+  name: string,
+): Promise<CustomerListItem> {
+  const data = await apiPostJson<{
+    message?: string
+    customer: CustomerListItem
+  }>('/customer/add', token, { name })
+  if (!data?.customer?.id) throw new Error('Müşteri eklenemedi')
+  return data.customer
+}
+
 export async function getCustomerSummary(
   token: string,
   customerId: string,

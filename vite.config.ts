@@ -1,8 +1,8 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-/** NestJS BestSahaTakip varsayılan portu (main.ts) */
-const BACKEND_ORIGIN = 'http://localhost:3004'
+/** NestJS BestSahaTakip — mobil network gradle ile aynı uzak backend */
+const BACKEND_ORIGIN = 'http://77.92.152.65:3004'
 
 export default defineConfig({
   plugins: [react()],

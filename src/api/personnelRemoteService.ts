@@ -96,6 +96,13 @@ export function buildQuotaWarningMessage(
     `Şu ana kadar kullanılan: ${minutesToText(usedMinutes)}\n` +
     `Bu kayıt: ${minutesToText(newEntryMinutes)}\n` +
     `Toplam: ${minutesToText(projectedMinutes)}\n\n` +
-    `Kotayı aşan süre faturalandırılacaktır. Kaydı oluşturmak istiyor musunuz?`
+    `Kotayı aşan süre faturalandırılacaktır. Servis yine de kaydedilebilir; ` +
+    `kaydettikten sonra yöneticinize bilgi veriniz.\n\n` +
+    `Kaydı oluşturmak istiyor musunuz?`
   )
 }
+
+/** Kota aşımıyla kaydedildikten sonra personele gösterilecek başarı metni */
+export const QUOTA_EXCEEDED_SUCCESS_MESSAGE =
+  'Uzaktan servisiniz kaydedildi. Saat sınırını aştınız; lütfen yöneticinize bilgi veriniz.'
+

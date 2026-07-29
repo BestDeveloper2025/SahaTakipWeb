@@ -13,7 +13,10 @@ import { CustomersPage } from './pages/CustomersPage'
 import { HomePage } from './pages/HomePage'
 import { LoginPage } from './pages/LoginPage'
 import { PersonnelHomePage } from './pages/PersonnelHomePage'
+import { PersonnelPage } from './pages/PersonnelPage'
 import { PersonnelRemoteServicePage } from './pages/personnel/PersonnelRemoteServicePage'
+import { RemoteServiceDetailPage } from './pages/RemoteServiceDetailPage'
+import { RemoteServicesPage } from './pages/RemoteServicesPage'
 import { ServiceDetailPage } from './pages/ServiceDetailPage'
 import { ServicesPage } from './pages/ServicesPage'
 import './App.css'
@@ -35,11 +38,20 @@ export default function App() {
                       path="servisler/:serviceId"
                       element={<ServiceDetailPage />}
                     />
+                    <Route
+                      path="uzaktan-servisler"
+                      element={<RemoteServicesPage />}
+                    />
+                    <Route
+                      path="uzaktan-servisler/:remoteServiceId"
+                      element={<RemoteServiceDetailPage />}
+                    />
                     <Route path="musteriler" element={<CustomersPage />} />
                     <Route
                       path="musteriler/:customerId"
                       element={<CustomerDetailPage />}
                     />
+                    <Route path="personeller" element={<PersonnelPage />} />
                   </Route>
                 </Route>
                 <Route element={<RequirePersonnel />}>

@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 import {
+  addCustomer,
   getAllCustomers,
   getUnbilledCustomers,
   type CustomerListItem,
@@ -15,6 +16,12 @@ export function CustomersPage() {
   const [unbilled, setUnbilled] = useState<UnbilledCustomer[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
+  const [showAddForm, setShowAddForm] = useState(false)
+  const [newName, setNewName] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [addError, setAddError] = useState<string | null>(null)
+  const [addSuccess, setAddSuccess] = useState<string | null>(null)
 
   useEffect(() => {
     if (!token) return
@@ -40,16 +47,117 @@ export function CustomersPage() {
     }
   }, [token])
 
+  function openAddForm() {
+    setShowAddForm(true)
+    setNewName('')
+    setAddError(null)
+    setAddSuccess(null)
+  }
+
+  function closeAddForm() {
+    setShowAddForm(false)
+    setNewName('')
+    setAddError(null)
+  }
+
+  async function handleAddSubmit(e: FormEvent) {
+    e.preventDefault()
+    if (!token) return
+    const name = newName.trim()
+    if (!name) {
+      setAddError('Müşteri adı gerekli')
+      return
+    }
+    setSubmitting(true)
+    setAddError(null)
+    setAddSuccess(null)
+    try {
+      const customer = await addCustomer(token, name)
+      setList((prev) => {
+        if (prev.some((c) => c.id === customer.id)) return prev
+        return [...prev, customer].sort(
+          (a, b) => a.orderNumber - b.orderNumber,
+        )
+      })
+      setAddSuccess(`"${customer.name}" eklendi`)
+      setNewName('')
+      setShowAddForm(false)
+    } catch (err) {
+      setAddError(err instanceof Error ? err.message : 'Müşteri eklenemedi')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
   return (
     <div className="shell">
       <main className="shell-main shell-main--wide customers-page">
         <header className="customers-intro">
-          <h1 className="customers-page-title">Müşteriler</h1>
-          <p className="customers-hint">
-            Bir müşteriye tıklayın; verilen normal ve uzaktan servisler ile
-            harcanan toplam zamanın detayı açılır.
-          </p>
+          <div className="customers-intro-row">
+            <div>
+              <h1 className="customers-page-title">Müşteriler</h1>
+              <p className="customers-hint">
+                Bir müşteriye tıklayın; verilen normal ve uzaktan servisler ile
+                harcanan toplam zamanın detayı açılır.
+              </p>
+            </div>
+            <button
+              type="button"
+              className="customers-add-btn"
+              onClick={openAddForm}
+              disabled={loading}
+            >
+              Müşteri ekle
+            </button>
+          </div>
         </header>
+
+        {showAddForm ? (
+          <form className="customers-add-form" onSubmit={handleAddSubmit}>
+            <label className="customers-add-label" htmlFor="customer-name">
+              Müşteri adı
+            </label>
+            <div className="customers-add-row">
+              <input
+                id="customer-name"
+                className="customers-add-input"
+                type="text"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                placeholder="Örn. ABC Şirketi"
+                autoFocus
+                disabled={submitting}
+                maxLength={200}
+              />
+              <button
+                type="submit"
+                className="customers-add-submit"
+                disabled={submitting}
+              >
+                {submitting ? 'Ekleniyor…' : 'Kaydet'}
+              </button>
+              <button
+                type="button"
+                className="customers-add-cancel"
+                onClick={closeAddForm}
+                disabled={submitting}
+              >
+                İptal
+              </button>
+            </div>
+            {addError ? (
+              <p className="customers-add-error" role="alert">
+                {addError}
+              </p>
+            ) : null}
+          </form>
+        ) : null}
+
+        {addSuccess ? (
+          <p className="customers-add-success" role="status">
+            {addSuccess}
+          </p>
+        ) : null}
 
         {!loading && unbilled.length > 0 ? (
           <section className="customers-unbilled">

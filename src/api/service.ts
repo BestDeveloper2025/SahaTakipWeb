@@ -130,3 +130,54 @@ export async function getServiceReportUrl(
     return null
   }
 }
+
+/** Mobil CreateServiceRequest — POST /service/create-service */
+export type CreateServicePayload = {
+  serviceNumber: string
+  serviceType: string
+  customerId: string
+  machineName: string
+  problemDescription: string
+  createdTime: string
+  language: string
+}
+
+export async function createService(
+  token: string,
+  payload: CreateServicePayload,
+): Promise<void> {
+  await apiPostJson<{ message?: string }>('/service/create-service', token, payload)
+}
+
+/** Mobil AssignPersonnelToServiceRequest — POST /service/assign-personnel-to-service */
+export async function assignPersonnelToService(
+  token: string,
+  serviceId: string,
+  personnelIds: string[],
+): Promise<void> {
+  await apiPostJson<{ message?: string }>(
+    '/service/assign-personnel-to-service',
+    token,
+    { serviceId, personnelIds },
+  )
+}
+
+/** Mobil getCurrentDateTime varsayılanı: yyyy-MM-dd */
+export function getServiceCreatedTimeToday(): string {
+  const d = new Date()
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
+}
+
+export const SERVICE_TYPE_OPTIONS = [
+  { value: 'Bakım', label: 'Bakım' },
+  { value: 'Kurulum', label: 'Kurulum' },
+] as const
+
+export const SERVICE_LANGUAGE_OPTIONS = [
+  { value: 'TR', label: 'Türkçe' },
+  { value: 'EN', label: 'English' },
+] as const
+

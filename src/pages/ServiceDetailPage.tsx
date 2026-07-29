@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
+import { getAllPersonnel, type PersonnelListItem } from '../api/personnel'
 import {
+  assignPersonnelToService,
   getEducationContentsByServiceId,
   getServiceById,
   getServiceEducationTypes,
@@ -109,9 +111,23 @@ export function ServiceDetailPage() {
     alt: string
   } | null>(null)
 
+  const [showAssignForm, setShowAssignForm] = useState(false)
+  const [allPersonnel, setAllPersonnel] = useState<PersonnelListItem[]>([])
+  const [personnelLoading, setPersonnelLoading] = useState(false)
+  const [selectedPersonnelIds, setSelectedPersonnelIds] = useState<string[]>([])
+  const [assignSubmitting, setAssignSubmitting] = useState(false)
+  const [assignError, setAssignError] = useState<string | null>(null)
+  const [assignSuccess, setAssignSuccess] = useState<string | null>(null)
+
   const closeImagePreview = useCallback(() => setImagePreview(null), [])
 
   const id = serviceId ? decodeURIComponent(serviceId) : ''
+
+  const reloadService = useCallback(async () => {
+    if (!token || !id) return
+    const svc = await getServiceById(token, id)
+    setService(svc)
+  }, [token, id])
 
   useEffect(() => {
     if (!token || !id) return
@@ -178,6 +194,77 @@ export function ServiceDetailPage() {
   }, [token, id])
 
   const logGroups = useMemo(() => groupAndSortLogs(dailyLogs), [dailyLogs])
+
+  const assignedIds = useMemo(
+    () => new Set((service?.assignedPersonnel ?? []).map((p) => String(p.id))),
+    [service],
+  )
+
+  const assignablePersonnel = useMemo(
+    () => allPersonnel.filter((p) => !assignedIds.has(p.id)),
+    [allPersonnel, assignedIds],
+  )
+
+  const canAssignPersonnel =
+    !!service && service.status !== 'COMPLETED'
+
+  async function openAssignForm() {
+    if (!token || !canAssignPersonnel) return
+    setShowAssignForm(true)
+    setAssignError(null)
+    setAssignSuccess(null)
+    setSelectedPersonnelIds([])
+    setPersonnelLoading(true)
+    try {
+      const rows = await getAllPersonnel(token)
+      setAllPersonnel(rows)
+    } catch (e) {
+      setAssignError(
+        e instanceof Error ? e.message : 'Personel listesi yüklenemedi',
+      )
+    } finally {
+      setPersonnelLoading(false)
+    }
+  }
+
+  function closeAssignForm() {
+    setShowAssignForm(false)
+    setSelectedPersonnelIds([])
+    setAssignError(null)
+  }
+
+  function togglePersonnel(person: PersonnelListItem) {
+    if (person.isActive) {
+      setAssignError(
+        'Personel aktif olduğu için farklı bir servise atanamaz',
+      )
+      return
+    }
+    setAssignError(null)
+    setSelectedPersonnelIds((prev) =>
+      prev.includes(person.id)
+        ? prev.filter((x) => x !== person.id)
+        : [...prev, person.id],
+    )
+  }
+
+  async function handleAssignSubmit() {
+    if (!token || !id || selectedPersonnelIds.length === 0) return
+    setAssignSubmitting(true)
+    setAssignError(null)
+    setAssignSuccess(null)
+    try {
+      await assignPersonnelToService(token, id, selectedPersonnelIds)
+      setAssignSuccess('Personel başarıyla atandı')
+      setShowAssignForm(false)
+      setSelectedPersonnelIds([])
+      await reloadService()
+    } catch (e) {
+      setAssignError(e instanceof Error ? e.message : 'Atama başarısız')
+    } finally {
+      setAssignSubmitting(false)
+    }
+  }
 
   if (!id) {
     return (
@@ -406,15 +493,111 @@ export function ServiceDetailPage() {
           className="detail-section detail-card detail-card--group"
           aria-labelledby="staff-heading"
         >
-          <div className="detail-section-stack">
-            <h2 id="staff-heading" className="detail-h2">
-              Bu serviste çalışanlar
-            </h2>
-            <p className="detail-section-lead detail-section-lead--tight">
-              Sahada atanmış personel ve şu an bu servisle ilişkilendirilme
-              durumu.
-            </p>
+          <div className="detail-section-stack detail-section-stack--row">
+            <div>
+              <h2 id="staff-heading" className="detail-h2">
+                Bu serviste çalışanlar
+              </h2>
+              <p className="detail-section-lead detail-section-lead--tight">
+                Sahada atanmış personel ve şu an bu servisle ilişkilendirilme
+                durumu.
+              </p>
+            </div>
+            {canAssignPersonnel ? (
+              <button
+                type="button"
+                className="detail-assign-btn"
+                onClick={() => void openAssignForm()}
+              >
+                Personel ata
+              </button>
+            ) : null}
           </div>
+
+          {assignSuccess ? (
+            <p className="detail-assign-success" role="status">
+              {assignSuccess}
+            </p>
+          ) : null}
+
+          {showAssignForm ? (
+            <div className="detail-assign-panel">
+              <h3 className="detail-assign-title">Personel Ata</h3>
+              <p className="detail-assign-hint">
+                Aktif personeller başka serviste çalıştığı için seçilemez. En az
+                bir personel seçin.
+              </p>
+              {personnelLoading ? (
+                <p className="detail-muted">Personel listesi yükleniyor…</p>
+              ) : assignablePersonnel.length === 0 ? (
+                <p className="detail-muted">
+                  Atanabilecek personel kalmadı (hepsi zaten bu serviste veya
+                  liste boş).
+                </p>
+              ) : (
+                <ul className="detail-assign-list">
+                  {assignablePersonnel.map((p) => {
+                    const checked = selectedPersonnelIds.includes(p.id)
+                    return (
+                      <li key={p.id}>
+                        <label
+                          className={
+                            p.isActive
+                              ? 'detail-assign-option detail-assign-option--blocked'
+                              : 'detail-assign-option'
+                          }
+                        >
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            disabled={p.isActive || assignSubmitting}
+                            onChange={() => togglePersonnel(p)}
+                          />
+                          <span className="detail-assign-option-body">
+                            <span className="detail-assign-option-name">
+                              {p.name}
+                            </span>
+                            <span className="detail-assign-option-meta">
+                              TC: {p.userTc || '—'}
+                              {p.isActive ? ' · Aktif (atanamaz)' : ''}
+                            </span>
+                          </span>
+                        </label>
+                      </li>
+                    )
+                  })}
+                </ul>
+              )}
+              {assignError ? (
+                <p className="detail-assign-error" role="alert">
+                  {assignError}
+                </p>
+              ) : null}
+              <div className="detail-assign-actions">
+                <button
+                  type="button"
+                  className="detail-assign-submit"
+                  disabled={
+                    assignSubmitting ||
+                    personnelLoading ||
+                    selectedPersonnelIds.length === 0
+                  }
+                  onClick={() => void handleAssignSubmit()}
+                >
+                  {assignSubmitting ? 'Atanıyor…' : 'Ata'}
+                </button>
+                <button
+                  type="button"
+                  className="detail-assign-cancel"
+                  disabled={assignSubmitting}
+                  onClick={closeAssignForm}
+                >
+                  İptal
+                </button>
+              </div>
+            </div>
+          ) : null}
+
           {service.assignedPersonnel?.length ? (
             <ul className="detail-personnel">
               {service.assignedPersonnel.map((p) => (

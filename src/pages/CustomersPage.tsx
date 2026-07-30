@@ -28,7 +28,11 @@ export function CustomersPage() {
     let cancelled = false
     setError(null)
     setLoading(true)
-    Promise.all([getAllCustomers(token), getUnbilledCustomers(token)])
+    // Liste asıl kaynak; unbilled başarısız olsa bile müşteriler görünsün
+    Promise.all([
+      getAllCustomers(token),
+      getUnbilledCustomers(token).catch(() => [] as UnbilledCustomer[]),
+    ])
       .then(([customers, unbilledCustomers]) => {
         if (!cancelled) {
           setList(customers)

@@ -12,6 +12,8 @@ import {
   type CreateRemoteServicePayload,
   type CustomerListItem,
 } from '../../api/personnelRemoteService'
+import { getAllMachines, type MachineListItem } from '../../api/machines'
+import { MachineSearchSelect } from '../../components/MachineSearchSelect'
 import './PersonnelRemoteServicePage.css'
 
 const emptyForm = {
@@ -32,7 +34,9 @@ type SelectedPhoto = {
 export function PersonnelRemoteServicePage() {
   const { token, userId } = useAuth()
   const [customers, setCustomers] = useState<CustomerListItem[]>([])
+  const [machines, setMachines] = useState<MachineListItem[]>([])
   const [customersLoading, setCustomersLoading] = useState(true)
+  const [machinesLoading, setMachinesLoading] = useState(true)
   const [form, setForm] = useState(emptyForm)
   const [photos, setPhotos] = useState<SelectedPhoto[]>([])
   const [submitting, setSubmitting] = useState(false)
@@ -47,9 +51,16 @@ export function PersonnelRemoteServicePage() {
     if (!token) return
     let cancelled = false
     setCustomersLoading(true)
-    getPersonnelCustomers(token)
-      .then((data) => {
-        if (!cancelled) setCustomers(data)
+    setMachinesLoading(true)
+    Promise.all([
+      getPersonnelCustomers(token),
+      getAllMachines(token).catch(() => [] as MachineListItem[]),
+    ])
+      .then(([customerRows, machineRows]) => {
+        if (!cancelled) {
+          setCustomers(customerRows)
+          setMachines(machineRows)
+        }
       })
       .catch((e) => {
         if (!cancelled)
@@ -58,7 +69,10 @@ export function PersonnelRemoteServicePage() {
           )
       })
       .finally(() => {
-        if (!cancelled) setCustomersLoading(false)
+        if (!cancelled) {
+          setCustomersLoading(false)
+          setMachinesLoading(false)
+        }
       })
     return () => {
       cancelled = true
@@ -151,7 +165,7 @@ export function PersonnelRemoteServicePage() {
       return
     }
     if (!form.machineName.trim()) {
-      setError('Makine adı boş olamaz')
+      setError('Makina seçmelisiniz')
       return
     }
     if (!form.startTime) {
@@ -220,12 +234,12 @@ export function PersonnelRemoteServicePage() {
 
   return (
     <main className="personnel-remote shell-main shell-main--wide">
-      <Link className="personnel-remote-back" to="/personel">
-        ← Ana sayfa
+      <Link className="personnel-remote-back" to="/personel/uzaktan-servis">
+        ← Uzaktan servislere dön
       </Link>
 
       <header className="personnel-remote-head">
-        <h1 className="personnel-remote-title">Uzaktan Servis</h1>
+        <h1 className="personnel-remote-title">Yeni Uzaktan Servis</h1>
         <p className="personnel-remote-hint">
           Müşteri için uzaktan servis kaydı oluşturun. 20 saatlik kota aşımında
           uyarı gösterilir; kayıt sonrası yöneticinize bilgi vermeniz gerekir.
@@ -281,15 +295,16 @@ export function PersonnelRemoteServicePage() {
           <section className="personnel-remote-section">
             <h2 className="personnel-remote-section-title">Makine Bilgileri</h2>
             <label className="personnel-remote-field">
-              <span className="personnel-remote-label">Makine Adı</span>
-              <input
-                className="personnel-remote-input"
-                type="text"
+              <span className="personnel-remote-label">Makina</span>
+              <MachineSearchSelect
+                machines={machines}
                 value={form.machineName}
-                onChange={(e) =>
-                  setForm((prev) => ({ ...prev, machineName: e.target.value }))
+                onChange={(machineName) =>
+                  setForm((prev) => ({ ...prev, machineName }))
                 }
-                placeholder="Makine adını girin"
+                disabled={submitting || customersLoading}
+                loading={machinesLoading}
+                placeholder="Makina ara veya seç…"
               />
             </label>
           </section>

@@ -11,7 +11,7 @@ export default defineConfig({
     proxy: {
       // CORS açık olmasa bile dev'de tarayıcıdan istek: aynı origin + Vite proxy
       // customer-summary, customer'dan önce (prefix)
-      '^/(auth|admin|personnel|service|delivery|report|daily-log|location|customer-summary|customer|version|test-pdf|chronic-issue|remote-service-request|education-content|photo|education-type|education|uploads|apk|api)':
+      '^/(auth|admin|personnel|service|delivery|report|daily-log|location|customer-summary|customer|machine|version|test-pdf|chronic-issue|remote-service-request|education-content|photo|education-type|education|uploads|apk|api)':
         {
           target: BACKEND_ORIGIN,
           changeOrigin: true,

@@ -1,0 +1,125 @@
+.personnel-remote-detail {
+  padding-bottom: 3rem;
+}
+
+.personnel-remote-detail-back {
+  display: inline-block;
+  margin-bottom: 14px;
+  color: #2563eb;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.personnel-remote-detail-back:hover {
+  text-decoration: underline;
+}
+
+.personnel-remote-detail-loading,
+.personnel-remote-detail-empty {
+  color: var(--text-muted, #64748b);
+}
+
+.personnel-remote-detail-error {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+
+.personnel-remote-detail-head {
+  margin-bottom: 18px;
+}
+
+.personnel-remote-detail-title {
+  margin: 0 0 6px;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.personnel-remote-detail-subtitle {
+  margin: 0;
+  color: var(--text-muted, #64748b);
+  font-weight: 600;
+}
+
+.personnel-remote-detail-card {
+  background: #fff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+  margin-bottom: 16px;
+}
+
+.personnel-remote-detail-section-title {
+  margin: 0 0 14px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #2563eb;
+}
+
+.personnel-remote-detail-dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px 18px;
+}
+
+.personnel-remote-detail-dl dt {
+  margin: 0 0 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #94a3b8;
+}
+
+.personnel-remote-detail-dl dd {
+  margin: 0;
+  font-weight: 600;
+  color: #334155;
+  word-break: break-word;
+}
+
+.personnel-remote-detail-desc {
+  margin: 0;
+  line-height: 1.6;
+  color: #334155;
+  white-space: pre-wrap;
+}
+
+.personnel-remote-detail-photos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.personnel-remote-detail-photo-btn {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f8fafc;
+  cursor: pointer;
+  aspect-ratio: 1;
+}
+
+.personnel-remote-detail-photo-btn img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.personnel-remote-detail-photo-btn:hover {
+  border-color: #2563eb;
+}

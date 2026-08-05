@@ -12,9 +12,12 @@ import { CustomerDetailPage } from './pages/CustomerDetailPage'
 import { CustomersPage } from './pages/CustomersPage'
 import { HomePage } from './pages/HomePage'
 import { LoginPage } from './pages/LoginPage'
+import { MachinesPage } from './pages/MachinesPage'
 import { PersonnelHomePage } from './pages/PersonnelHomePage'
 import { PersonnelPage } from './pages/PersonnelPage'
+import { PersonnelRemoteServiceDetailPage } from './pages/personnel/PersonnelRemoteServiceDetailPage'
 import { PersonnelRemoteServicePage } from './pages/personnel/PersonnelRemoteServicePage'
+import { PersonnelRemoteServicesPage } from './pages/personnel/PersonnelRemoteServicesPage'
 import { RemoteServiceDetailPage } from './pages/RemoteServiceDetailPage'
 import { RemoteServicesPage } from './pages/RemoteServicesPage'
 import { ServiceDetailPage } from './pages/ServiceDetailPage'
@@ -52,6 +55,7 @@ export default function App() {
                       element={<CustomerDetailPage />}
                     />
                     <Route path="personeller" element={<PersonnelPage />} />
+                    <Route path="makineler" element={<MachinesPage />} />
                   </Route>
                 </Route>
                 <Route element={<RequirePersonnel />}>
@@ -59,7 +63,15 @@ export default function App() {
                     <Route path="personel" element={<PersonnelHomePage />} />
                     <Route
                       path="personel/uzaktan-servis"
+                      element={<PersonnelRemoteServicesPage />}
+                    />
+                    <Route
+                      path="personel/uzaktan-servis/yeni"
                       element={<PersonnelRemoteServicePage />}
+                    />
+                    <Route
+                      path="personel/uzaktan-servis/:remoteServiceId"
+                      element={<PersonnelRemoteServiceDetailPage />}
                     />
                   </Route>
                 </Route>

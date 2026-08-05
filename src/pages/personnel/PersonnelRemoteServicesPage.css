@@ -1,0 +1,236 @@
+.personnel-remote-list {
+  padding-bottom: 3rem;
+}
+
+.personnel-remote-list-back {
+  display: inline-block;
+  margin-bottom: 14px;
+  color: #2563eb;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.personnel-remote-list-back:hover {
+  text-decoration: underline;
+}
+
+.personnel-remote-list-head {
+  margin-bottom: 16px;
+}
+
+.personnel-remote-list-head-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.personnel-remote-list-title {
+  margin: 0 0 6px;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.personnel-remote-list-hint {
+  margin: 0;
+  color: var(--text-muted, #64748b);
+  max-width: 60ch;
+}
+
+.personnel-remote-list-add {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-weight: 700;
+  color: #fff;
+  background: #2563eb;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.personnel-remote-list-add:hover {
+  background: #1d4ed8;
+}
+
+.personnel-remote-list-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  margin-bottom: 16px;
+}
+
+.personnel-remote-list-search-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.personnel-remote-list-search {
+  flex: 1 1 220px;
+  min-height: 42px;
+  padding: 0.55rem 0.85rem;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  font: inherit;
+  font-size: 0.95rem;
+  background: #fff;
+}
+
+.personnel-remote-list-search:focus {
+  outline: 2px solid rgba(37, 99, 235, 0.35);
+  border-color: #2563eb;
+}
+
+.personnel-remote-list-count {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-muted, #64748b);
+  white-space: nowrap;
+}
+
+.personnel-remote-list-error {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+
+.personnel-remote-list-empty {
+  color: var(--text-muted, #64748b);
+  margin: 0 0 12px;
+}
+
+.personnel-remote-list-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+@media (min-width: 640px) {
+  .personnel-remote-list-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.personnel-remote-list-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  padding: 18px;
+  border-radius: 16px;
+  background: #fff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+  text-decoration: none;
+  color: inherit;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    border-color 0.12s ease;
+}
+
+.personnel-remote-list-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.1);
+  border-color: rgba(37, 99, 235, 0.35);
+}
+
+.personnel-remote-list-card-top {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.personnel-remote-list-card-machine {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #2563eb;
+}
+
+.personnel-remote-list-card-time {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted, #64748b);
+}
+
+.personnel-remote-list-card-dl {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.personnel-remote-list-card-row {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr;
+  gap: 8px;
+  font-size: 0.875rem;
+}
+
+.personnel-remote-list-card-row dt {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #94a3b8;
+}
+
+.personnel-remote-list-card-row dd {
+  margin: 0;
+  color: #334155;
+  font-weight: 500;
+  word-break: break-word;
+}
+
+.personnel-remote-list-card-row--desc dd {
+  color: var(--text-muted, #64748b);
+  font-weight: 400;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.personnel-remote-list-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.personnel-remote-list-card-photos {
+  font-size: 0.8rem;
+  font-weight: 650;
+  color: #475569;
+}
+
+.personnel-remote-list-card-photos--none {
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.personnel-remote-list-card-cta {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #2563eb;
+}

@@ -27,7 +27,8 @@ export function isAdminPath(pathname: string): boolean {
     pathname.startsWith('/servisler') ||
     pathname.startsWith('/uzaktan-servisler') ||
     pathname.startsWith('/musteriler') ||
-    pathname.startsWith('/personeller')
+    pathname.startsWith('/personeller') ||
+    pathname.startsWith('/makineler')
   )
 }
 

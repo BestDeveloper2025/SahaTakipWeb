@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 import { getAllCustomers, type CustomerListItem } from '../api/customers'
+import { getAllMachines, type MachineListItem } from '../api/machines'
 import {
   createService,
   getAllServices,
@@ -16,6 +17,7 @@ import {
   formatServiceDate,
   serviceListKey,
 } from '../components/ServiceStatusBadge'
+import { MachineSearchSelect } from '../components/MachineSearchSelect'
 import './ServicesPage.css'
 
 const emptyCreateForm = {
@@ -44,6 +46,8 @@ export function ServicesPage() {
   const [showScrollTop, setShowScrollTop] = useState(false)
 
   const [customers, setCustomers] = useState<CustomerListItem[]>([])
+  const [machines, setMachines] = useState<MachineListItem[]>([])
+  const [machinesLoading, setMachinesLoading] = useState(false)
   const [showAddForm, setShowAddForm] = useState(false)
   const [createForm, setCreateForm] = useState(emptyCreateForm)
   const [submitting, setSubmitting] = useState(false)
@@ -72,6 +76,25 @@ export function ServicesPage() {
       cancelled = true
     }
   }, [token])
+
+  useEffect(() => {
+    if (!token || !showAddForm) return
+    let cancelled = false
+    setMachinesLoading(true)
+    getAllMachines(token)
+      .then((rows) => {
+        if (!cancelled) setMachines(rows)
+      })
+      .catch(() => {
+        if (!cancelled) setMachines([])
+      })
+      .finally(() => {
+        if (!cancelled) setMachinesLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [token, showAddForm])
 
   useEffect(() => {
     if (!token) return
@@ -176,7 +199,7 @@ export function ServicesPage() {
       return
     }
     if (!machineName) {
-      setAddError('Makina adı boş olamaz')
+      setAddError('Makina seçmelisiniz')
       return
     }
     if (!problemDescription) {
@@ -305,18 +328,15 @@ export function ServicesPage() {
                 </select>
               </label>
               <label className="services-add-field">
-                <span>Makina adı</span>
-                <input
-                  className="services-add-input"
-                  type="text"
+                <span>Makina</span>
+                <MachineSearchSelect
+                  machines={machines}
                   value={createForm.machineName}
-                  onChange={(e) =>
-                    setCreateForm((f) => ({
-                      ...f,
-                      machineName: e.target.value,
-                    }))
+                  onChange={(machineName) =>
+                    setCreateForm((f) => ({ ...f, machineName }))
                   }
                   disabled={submitting}
+                  loading={machinesLoading}
                 />
               </label>
               <label className="services-add-field services-add-field--full">

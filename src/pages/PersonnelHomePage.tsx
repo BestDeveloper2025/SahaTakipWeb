@@ -4,7 +4,7 @@ import './PersonnelHomePage.css'
 const actions = [
   {
     title: 'Uzaktan Servis',
-    description: 'Müşteri için uzaktan servis kaydı oluşturun.',
+    description: 'Geçmiş kayıtları görüntüleyin veya yeni uzaktan servis ekleyin.',
     to: '/personel/uzaktan-servis',
   },
 ]

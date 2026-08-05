@@ -14,6 +14,8 @@ export function DashboardFrame() {
     pathname === '/musteriler' || pathname.startsWith('/musteriler/')
   const personelSection =
     pathname === '/personeller' || pathname.startsWith('/personeller/')
+  const makineSection =
+    pathname === '/makineler' || pathname.startsWith('/makineler/')
   const uzaktanSection =
     pathname === '/uzaktan-servisler' ||
     pathname.startsWith('/uzaktan-servisler/')
@@ -68,6 +70,17 @@ export function DashboardFrame() {
           end
         >
           Müşteriler
+        </NavLink>
+        <NavLink
+          className={({ isActive }) =>
+            ['app-subnav-link', isActive || makineSection ? 'active' : '']
+              .filter(Boolean)
+              .join(' ')
+          }
+          to="/makineler"
+          end
+        >
+          Makineler
         </NavLink>
         <NavLink
           className={({ isActive }) =>

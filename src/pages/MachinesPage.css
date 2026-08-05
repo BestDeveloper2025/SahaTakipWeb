@@ -191,10 +191,64 @@
   background: #fff;
   border: 1px solid rgba(15, 23, 42, 0.08);
   box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .machines-card-name {
   font-weight: 700;
   color: var(--color-primary, #1e769a);
   word-break: break-word;
+}
+
+.machines-card-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.machines-card-btn {
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  min-height: 36px;
+  padding: 0.35rem 0.8rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.machines-card-btn--ghost {
+  background: #f1f5f9;
+  color: #334155;
+}
+
+.machines-card-btn--primary {
+  background: var(--color-primary, #1e769a);
+  color: #fff;
+}
+
+.machines-card-btn--danger {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.machines-card-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.machines-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.machines-edit-input {
+  min-height: 40px;
+  padding: 0.55rem 0.85rem;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  font: inherit;
 }

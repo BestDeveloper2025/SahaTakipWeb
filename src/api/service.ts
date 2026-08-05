@@ -131,12 +131,12 @@ export async function getServiceReportUrl(
   }
 }
 
-/** Mobil CreateServiceRequest — POST /service/create-service */
+/** Web + API — POST /service/create-service */
 export type CreateServicePayload = {
   serviceNumber: string
   serviceType: string
   customerId: string
-  machineName: string
+  machineId: string
   problemDescription: string
   createdTime: string
   language: string

@@ -7,7 +7,7 @@ export type { CustomerListItem }
 export type CreateRemoteServicePayload = {
   personnelID: string
   customerID: string
-  machineName: string
+  machineID: string
   serviceDescription: string
   date: string
   startTime: string
@@ -39,7 +39,7 @@ export async function createRemoteService(
   const formData = new FormData()
   formData.append('personnelID', payload.personnelID)
   formData.append('customerID', payload.customerID)
-  formData.append('machineName', payload.machineName)
+  formData.append('machineID', payload.machineID)
   formData.append('serviceDescription', payload.serviceDescription)
   formData.append('date', payload.date)
   formData.append('startTime', payload.startTime)

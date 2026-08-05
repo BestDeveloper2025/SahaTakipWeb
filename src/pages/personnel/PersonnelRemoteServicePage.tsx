@@ -18,7 +18,7 @@ import './PersonnelRemoteServicePage.css'
 
 const emptyForm = {
   customerId: '',
-  machineName: '',
+  machineId: '',
   startTime: '',
   endTime: '',
   serviceDescription: '',
@@ -164,7 +164,7 @@ export function PersonnelRemoteServicePage() {
       setError('Müşteri seçmelisiniz')
       return
     }
-    if (!form.machineName.trim()) {
+    if (!form.machineId.trim()) {
       setError('Makina seçmelisiniz')
       return
     }
@@ -184,7 +184,7 @@ export function PersonnelRemoteServicePage() {
     const request: CreateRemoteServicePayload = {
       personnelID: userId,
       customerID: form.customerId,
-      machineName: form.machineName.trim(),
+      machineID: form.machineId,
       serviceDescription: form.serviceDescription.trim(),
       date: getCurrentDateDDMMYYYY(),
       startTime: form.startTime,
@@ -298,9 +298,9 @@ export function PersonnelRemoteServicePage() {
               <span className="personnel-remote-label">Makina</span>
               <MachineSearchSelect
                 machines={machines}
-                value={form.machineName}
-                onChange={(machineName) =>
-                  setForm((prev) => ({ ...prev, machineName }))
+                value={form.machineId}
+                onChange={(machineId) =>
+                  setForm((prev) => ({ ...prev, machineId }))
                 }
                 disabled={submitting || customersLoading}
                 loading={machinesLoading}

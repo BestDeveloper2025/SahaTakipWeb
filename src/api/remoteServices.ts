@@ -7,6 +7,7 @@ export type RemoteServiceListItem = {
   personnelName: string
   customerID: string
   customerName: string
+  machineID?: string
   machineName: string
   serviceDescription: string
   date: string
@@ -40,6 +41,7 @@ export async function getAllRemoteServices(
         personnelName: String(row.personnelName ?? ''),
         customerID: String(row.customerID ?? ''),
         customerName: String(row.customerName ?? ''),
+        machineID: String(row.machineID ?? ''),
         machineName: String(row.machineName ?? ''),
         serviceDescription: String(row.serviceDescription ?? ''),
         date: String(row.date ?? ''),

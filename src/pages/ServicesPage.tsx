@@ -25,7 +25,7 @@ const emptyCreateForm = {
   customerId: '',
   language: 'TR',
   serviceType: 'Bakım',
-  machineName: '',
+  machineId: '',
   problemDescription: '',
 }
 
@@ -179,7 +179,7 @@ export function ServicesPage() {
     if (!token) return
 
     const serviceNumber = createForm.serviceNumber.trim()
-    const machineName = createForm.machineName.trim()
+    const machineId = createForm.machineId.trim()
     const problemDescription = createForm.problemDescription.trim()
 
     if (!serviceNumber) {
@@ -198,7 +198,7 @@ export function ServicesPage() {
       setAddError('Servis türü boş olamaz')
       return
     }
-    if (!machineName) {
+    if (!machineId) {
       setAddError('Makina seçmelisiniz')
       return
     }
@@ -215,7 +215,7 @@ export function ServicesPage() {
         serviceNumber,
         serviceType: createForm.serviceType,
         customerId: createForm.customerId,
-        machineName,
+        machineId,
         problemDescription,
         createdTime: getServiceCreatedTimeToday(),
         language: createForm.language,
@@ -331,9 +331,9 @@ export function ServicesPage() {
                 <span>Makina</span>
                 <MachineSearchSelect
                   machines={machines}
-                  value={createForm.machineName}
-                  onChange={(machineName) =>
-                    setCreateForm((f) => ({ ...f, machineName }))
+                  value={createForm.machineId}
+                  onChange={(machineId) =>
+                    setCreateForm((f) => ({ ...f, machineId }))
                   }
                   disabled={submitting}
                   loading={machinesLoading}

@@ -54,6 +54,41 @@ export async function addMachine(
   }
 }
 
+export async function updateMachine(
+  token: string,
+  machineId: string,
+  newName: string,
+): Promise<void> {
+  await apiPostJson('/machine/update', token, {
+    machineId,
+    newName: newName.trim(),
+  })
+}
+
+export async function deleteMachine(
+  token: string,
+  machineId: string,
+): Promise<MachineListItem[]> {
+  const data = await apiPostJson<unknown>('/machine/delete', token, {
+    machineId,
+  })
+  if (!Array.isArray(data)) {
+    throw new Error('Makina silinemedi')
+  }
+  return (data as Record<string, unknown>[])
+    .map((row) => ({
+      id: String(row.id ?? row._id ?? ''),
+      name: String(row.name ?? ''),
+      isDeleted:
+        typeof row.isDeleted === 'boolean' ? row.isDeleted : undefined,
+      createdAt:
+        typeof row.createdAt === 'string' ? row.createdAt : undefined,
+      updatedAt:
+        typeof row.updatedAt === 'string' ? row.updatedAt : undefined,
+    }))
+    .filter((m) => m.id && m.name)
+}
+
 export function filterMachinesByQuery(
   machines: MachineListItem[],
   query: string,
@@ -63,4 +98,11 @@ export function filterMachinesByQuery(
   return machines.filter((m) =>
     m.name.toLocaleLowerCase('tr').includes(q),
   )
+}
+
+export function getMachineNameById(
+  machines: MachineListItem[],
+  machineId: string,
+): string {
+  return machines.find((m) => m.id === machineId)?.name ?? ''
 }

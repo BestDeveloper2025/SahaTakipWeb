@@ -1,6 +1,7 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import {
   filterMachinesByQuery,
+  getMachineNameById,
   type MachineListItem,
 } from '../api/machines'
 import './MachineSearchSelect.css'
@@ -8,7 +9,7 @@ import './MachineSearchSelect.css'
 type MachineSearchSelectProps = {
   machines: MachineListItem[]
   value: string
-  onChange: (machineName: string) => void
+  onChange: (machineId: string) => void
   disabled?: boolean
   loading?: boolean
   placeholder?: string
@@ -29,11 +30,18 @@ export function MachineSearchSelect({
   const listboxId = `${inputId}-listbox`
   const rootRef = useRef<HTMLDivElement>(null)
   const [open, setOpen] = useState(false)
-  const [query, setQuery] = useState(value)
+  const [query, setQuery] = useState('')
+
+  const selectedName = useMemo(
+    () => getMachineNameById(machines, value),
+    [machines, value],
+  )
 
   useEffect(() => {
-    setQuery(value)
-  }, [value])
+    if (!open) {
+      setQuery(selectedName)
+    }
+  }, [selectedName, open])
 
   useEffect(() => {
     function handlePointerDown(event: MouseEvent) {
@@ -50,9 +58,9 @@ export function MachineSearchSelect({
     [machines, query],
   )
 
-  function selectMachine(name: string) {
-    onChange(name)
-    setQuery(name)
+  function selectMachine(machine: MachineListItem) {
+    onChange(machine.id)
+    setQuery(machine.name)
     setOpen(false)
   }
 
@@ -74,7 +82,10 @@ export function MachineSearchSelect({
         aria-expanded={open}
         aria-controls={listboxId}
         aria-autocomplete="list"
-        onFocus={() => setOpen(true)}
+        onFocus={() => {
+          setOpen(true)
+          if (!query && selectedName) setQuery(selectedName)
+        }}
         onChange={(e) => {
           setQuery(e.target.value)
           onChange('')
@@ -94,16 +105,16 @@ export function MachineSearchSelect({
             </li>
           ) : (
             filtered.map((machine) => (
-              <li key={machine.id} role="option" aria-selected={value === machine.name}>
+              <li key={machine.id} role="option" aria-selected={value === machine.id}>
                 <button
                   type="button"
                   className={
-                    value === machine.name
+                    value === machine.id
                       ? 'machine-search-option machine-search-option--selected'
                       : 'machine-search-option'
                   }
                   onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => selectMachine(machine.name)}
+                  onClick={() => selectMachine(machine)}
                 >
                   {machine.name}
                 </button>

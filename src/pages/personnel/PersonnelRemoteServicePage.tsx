@@ -46,6 +46,7 @@ export function PersonnelRemoteServicePage() {
   const [machinesLoading, setMachinesLoading] = useState(true)
   const [form, setForm] = useState(emptyForm)
   const [teamIds, setTeamIds] = useState<string[]>([])
+  const [teamSearch, setTeamSearch] = useState('')
   const [photos, setPhotos] = useState<SelectedPhoto[]>([])
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -55,8 +56,17 @@ export function PersonnelRemoteServicePage() {
     useState<CreateRemoteServicePayload | null>(null)
   const [pendingQuotaExceeded, setPendingQuotaExceeded] = useState(false)
 
-  const teammateOptions = useMemo(
-    () => personnel.filter((p) => p.id && p.id !== userId),
+  const teammateOptions = useMemo(() => {
+    const q = teamSearch.trim().toLocaleLowerCase('tr')
+    return personnel.filter((p) => {
+      if (!p.id || p.id === userId) return false
+      if (!q) return true
+      return p.name.toLocaleLowerCase('tr').includes(q)
+    })
+  }, [personnel, userId, teamSearch])
+
+  const hasOtherPersonnel = useMemo(
+    () => personnel.some((p) => p.id && p.id !== userId),
     [personnel, userId],
   )
 
@@ -97,6 +107,7 @@ export function PersonnelRemoteServicePage() {
   const clearForm = useCallback(() => {
     setForm({ ...emptyForm, date: getTodayIsoDate() })
     setTeamIds([])
+    setTeamSearch('')
     setPhotos((prev) => {
       prev.forEach((p) => URL.revokeObjectURL(p.previewUrl))
       return []
@@ -342,32 +353,48 @@ export function PersonnelRemoteServicePage() {
               Opsiyonel — birlikte çalıştığınız kişileri seçin (birden fazla
               seçilebilir). Siz otomatik olarak kayda eklenirsiniz.
             </p>
-            {teammateOptions.length === 0 ? (
+            {!hasOtherPersonnel ? (
               <p className="personnel-remote-photo-hint">
                 Seçilebilecek başka personel yok.
               </p>
             ) : (
-              <ul className="personnel-remote-team-list">
-                {teammateOptions.map((p) => {
-                  const checked = teamIds.includes(p.id)
-                  return (
-                    <li key={p.id}>
-                      <label className="personnel-remote-team-item">
-                        <input
-                          type="checkbox"
-                          checked={checked}
-                          disabled={submitting}
-                          onChange={() => toggleTeammate(p.id)}
-                        />
-                        <span>
-                          {p.name}
-                          {!p.isActive ? ' (pasif)' : ''}
-                        </span>
-                      </label>
-                    </li>
-                  )
-                })}
-              </ul>
+              <>
+                <label className="personnel-remote-field">
+                  <span className="personnel-remote-label">Personel ara</span>
+                  <input
+                    className="personnel-remote-input"
+                    type="search"
+                    value={teamSearch}
+                    onChange={(e) => setTeamSearch(e.target.value)}
+                    placeholder="İsim ile ara…"
+                    disabled={submitting}
+                  />
+                </label>
+                {teammateOptions.length === 0 ? (
+                  <p className="personnel-remote-photo-hint">
+                    Aramanızla eşleşen personel bulunamadı.
+                  </p>
+                ) : (
+                  <ul className="personnel-remote-team-list">
+                    {teammateOptions.map((p) => {
+                      const checked = teamIds.includes(p.id)
+                      return (
+                        <li key={p.id}>
+                          <label className="personnel-remote-team-item">
+                            <input
+                              type="checkbox"
+                              checked={checked}
+                              disabled={submitting}
+                              onChange={() => toggleTeammate(p.id)}
+                            />
+                            <span>{p.name}</span>
+                          </label>
+                        </li>
+                      )
+                    })}
+                  </ul>
+                )}
+              </>
             )}
           </section>
 

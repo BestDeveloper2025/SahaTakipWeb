@@ -15,8 +15,8 @@ import {
 } from '../../api/personnelRemoteService'
 import { getAllMachines, type MachineListItem } from '../../api/machines'
 import {
-  getActivePersonnel,
-  type ActivePersonnelListItem,
+  getAllPersonnel,
+  type PersonnelListItem,
 } from '../../api/personnel'
 import { MachineSearchSelect } from '../../components/MachineSearchSelect'
 import './PersonnelRemoteServicePage.css'
@@ -37,15 +37,11 @@ type SelectedPhoto = {
   previewUrl: string
 }
 
-function personnelRowId(p: ActivePersonnelListItem): string {
-  return String(p.id ?? p._id ?? '')
-}
-
 export function PersonnelRemoteServicePage() {
   const { token, userId } = useAuth()
   const [customers, setCustomers] = useState<CustomerListItem[]>([])
   const [machines, setMachines] = useState<MachineListItem[]>([])
-  const [personnel, setPersonnel] = useState<ActivePersonnelListItem[]>([])
+  const [personnel, setPersonnel] = useState<PersonnelListItem[]>([])
   const [customersLoading, setCustomersLoading] = useState(true)
   const [machinesLoading, setMachinesLoading] = useState(true)
   const [form, setForm] = useState(emptyForm)
@@ -60,11 +56,7 @@ export function PersonnelRemoteServicePage() {
   const [pendingQuotaExceeded, setPendingQuotaExceeded] = useState(false)
 
   const teammateOptions = useMemo(
-    () =>
-      personnel.filter((p) => {
-        const id = personnelRowId(p)
-        return id && id !== userId
-      }),
+    () => personnel.filter((p) => p.id && p.id !== userId),
     [personnel, userId],
   )
 
@@ -76,7 +68,7 @@ export function PersonnelRemoteServicePage() {
     Promise.all([
       getPersonnelCustomers(token),
       getAllMachines(token).catch(() => [] as MachineListItem[]),
-      getActivePersonnel(token).catch(() => [] as ActivePersonnelListItem[]),
+      getAllPersonnel(token).catch(() => [] as PersonnelListItem[]),
     ])
       .then(([customerRows, machineRows, personnelRows]) => {
         if (!cancelled) {
@@ -352,23 +344,25 @@ export function PersonnelRemoteServicePage() {
             </p>
             {teammateOptions.length === 0 ? (
               <p className="personnel-remote-photo-hint">
-                Seçilebilecek başka aktif personel yok.
+                Seçilebilecek başka personel yok.
               </p>
             ) : (
               <ul className="personnel-remote-team-list">
                 {teammateOptions.map((p) => {
-                  const id = personnelRowId(p)
-                  const checked = teamIds.includes(id)
+                  const checked = teamIds.includes(p.id)
                   return (
-                    <li key={id}>
+                    <li key={p.id}>
                       <label className="personnel-remote-team-item">
                         <input
                           type="checkbox"
                           checked={checked}
                           disabled={submitting}
-                          onChange={() => toggleTeammate(id)}
+                          onChange={() => toggleTeammate(p.id)}
                         />
-                        <span>{p.name}</span>
+                        <span>
+                          {p.name}
+                          {!p.isActive ? ' (pasif)' : ''}
+                        </span>
                       </label>
                     </li>
                   )

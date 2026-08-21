@@ -5,9 +5,11 @@ import {
   addCustomer,
   getAllCustomers,
   getUnbilledCustomers,
+  updateCustomer,
   type CustomerListItem,
   type UnbilledCustomer,
 } from '../api/customers'
+import { COUNTRIES } from '../constants/countries'
 import './CustomersPage.css'
 
 export function CustomersPage() {
@@ -19,9 +21,15 @@ export function CustomersPage() {
 
   const [showAddForm, setShowAddForm] = useState(false)
   const [newName, setNewName] = useState('')
+  const [newCountry, setNewCountry] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [addError, setAddError] = useState<string | null>(null)
   const [addSuccess, setAddSuccess] = useState<string | null>(null)
+
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editName, setEditName] = useState('')
+  const [editCountry, setEditCountry] = useState('')
+  const [editError, setEditError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!token) return
@@ -54,14 +62,33 @@ export function CustomersPage() {
   function openAddForm() {
     setShowAddForm(true)
     setNewName('')
+    setNewCountry('')
     setAddError(null)
     setAddSuccess(null)
+    setEditingId(null)
   }
 
   function closeAddForm() {
     setShowAddForm(false)
     setNewName('')
+    setNewCountry('')
     setAddError(null)
+  }
+
+  function startEdit(customer: CustomerListItem) {
+    setShowAddForm(false)
+    setEditingId(customer.id)
+    setEditName(customer.name)
+    setEditCountry(customer.country ?? '')
+    setEditError(null)
+    setAddSuccess(null)
+  }
+
+  function cancelEdit() {
+    setEditingId(null)
+    setEditName('')
+    setEditCountry('')
+    setEditError(null)
   }
 
   async function handleAddSubmit(e: FormEvent) {
@@ -72,11 +99,15 @@ export function CustomersPage() {
       setAddError('Müşteri adı gerekli')
       return
     }
+    if (!newCountry) {
+      setAddError('Ülke seçimi gerekli')
+      return
+    }
     setSubmitting(true)
     setAddError(null)
     setAddSuccess(null)
     try {
-      const customer = await addCustomer(token, name)
+      const customer = await addCustomer(token, name, newCountry)
       setList((prev) => {
         if (prev.some((c) => c.id === customer.id)) return prev
         return [...prev, customer].sort(
@@ -85,9 +116,40 @@ export function CustomersPage() {
       })
       setAddSuccess(`"${customer.name}" eklendi`)
       setNewName('')
+      setNewCountry('')
       setShowAddForm(false)
     } catch (err) {
       setAddError(err instanceof Error ? err.message : 'Müşteri eklenemedi')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  async function handleEditSubmit(e: FormEvent, customerId: string) {
+    e.preventDefault()
+    if (!token) return
+    const name = editName.trim()
+    if (!name) {
+      setEditError('Müşteri adı gerekli')
+      return
+    }
+    if (!editCountry) {
+      setEditError('Ülke seçimi gerekli')
+      return
+    }
+    setSubmitting(true)
+    setEditError(null)
+    try {
+      const updated = await updateCustomer(token, customerId, name, editCountry)
+      setList((prev) =>
+        prev.map((c) => (c.id === customerId ? { ...c, ...updated } : c)),
+      )
+      setAddSuccess(`"${updated.name}" güncellendi`)
+      cancelEdit()
+    } catch (err) {
+      setEditError(
+        err instanceof Error ? err.message : 'Müşteri güncellenemedi',
+      )
     } finally {
       setSubmitting(false)
     }
@@ -121,18 +183,36 @@ export function CustomersPage() {
             <label className="customers-add-label" htmlFor="customer-name">
               Müşteri adı
             </label>
+            <input
+              id="customer-name"
+              className="customers-add-input customers-add-input--full"
+              type="text"
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              placeholder="Örn. ABC Şirketi"
+              autoFocus
+              disabled={submitting}
+              maxLength={200}
+            />
+            <label className="customers-add-label" htmlFor="customer-country">
+              Ülke
+            </label>
+            <select
+              id="customer-country"
+              className="customers-add-select"
+              value={newCountry}
+              onChange={(e) => setNewCountry(e.target.value)}
+              disabled={submitting}
+              required
+            >
+              <option value="">Ülke seçin</option>
+              {COUNTRIES.map((country) => (
+                <option key={country} value={country}>
+                  {country}
+                </option>
+              ))}
+            </select>
             <div className="customers-add-row">
-              <input
-                id="customer-name"
-                className="customers-add-input"
-                type="text"
-                value={newName}
-                onChange={(e) => setNewName(e.target.value)}
-                placeholder="Örn. ABC Şirketi"
-                autoFocus
-                disabled={submitting}
-                maxLength={200}
-              />
               <button
                 type="submit"
                 className="customers-add-submit"
@@ -203,23 +283,103 @@ export function CustomersPage() {
         <ul className="customers-grid">
           {list.map((c) => {
             const pending = unbilled.find((u) => u.customerId === c.id)
+            const isEditing = editingId === c.id
             return (
-              <li key={c.id}>
-                <Link
-                  className="customers-card"
-                  to={`/musteriler/${encodeURIComponent(c.id)}`}
-                >
-                  <div className="customers-card-top">
-                    <span className="customers-card-name">{c.name}</span>
-                    <span className="customers-card-no">#{c.orderNumber}</span>
-                  </div>
-                  {pending ? (
-                    <span className="customers-card-unbilled">
-                      Faturalandırılacak: {pending.unbilledText}
+              <li key={c.id} className="customers-card-wrap">
+                {isEditing ? (
+                  <form
+                    className="customers-card customers-card--edit"
+                    onSubmit={(e) => void handleEditSubmit(e, c.id)}
+                  >
+                    <label className="customers-add-label" htmlFor={`edit-name-${c.id}`}>
+                      Müşteri adı
+                    </label>
+                    <input
+                      id={`edit-name-${c.id}`}
+                      className="customers-add-input customers-add-input--full"
+                      type="text"
+                      value={editName}
+                      onChange={(e) => setEditName(e.target.value)}
+                      disabled={submitting}
+                      autoFocus
+                      maxLength={200}
+                    />
+                    <label
+                      className="customers-add-label"
+                      htmlFor={`edit-country-${c.id}`}
+                    >
+                      Ülke
+                    </label>
+                    <select
+                      id={`edit-country-${c.id}`}
+                      className="customers-add-select"
+                      value={editCountry}
+                      onChange={(e) => setEditCountry(e.target.value)}
+                      disabled={submitting}
+                      required
+                    >
+                      <option value="">Ülke seçin</option>
+                      {COUNTRIES.map((country) => (
+                        <option key={country} value={country}>
+                          {country}
+                        </option>
+                      ))}
+                    </select>
+                    {editError ? (
+                      <p className="customers-add-error" role="alert">
+                        {editError}
+                      </p>
+                    ) : null}
+                    <div className="customers-card-actions">
+                      <button
+                        type="button"
+                        className="customers-card-btn customers-card-btn--ghost"
+                        onClick={cancelEdit}
+                        disabled={submitting}
+                      >
+                        İptal
+                      </button>
+                      <button
+                        type="submit"
+                        className="customers-card-btn customers-card-btn--primary"
+                        disabled={submitting}
+                      >
+                        {submitting ? 'Kaydediliyor…' : 'Kaydet'}
+                      </button>
+                    </div>
+                  </form>
+                ) : (
+                  <div className="customers-card">
+                    <div className="customers-card-top">
+                      <span className="customers-card-name">{c.name}</span>
+                      <span className="customers-card-no">#{c.orderNumber}</span>
+                    </div>
+                    <span className="customers-card-country">
+                      {c.country?.trim() ? c.country : 'Ülke belirtilmemiş'}
                     </span>
-                  ) : null}
-                  <span className="customers-card-cta">Detayı aç</span>
-                </Link>
+                    {pending ? (
+                      <span className="customers-card-unbilled">
+                        Faturalandırılacak: {pending.unbilledText}
+                      </span>
+                    ) : null}
+                    <div className="customers-card-actions">
+                      <button
+                        type="button"
+                        className="customers-card-btn customers-card-btn--ghost"
+                        onClick={() => startEdit(c)}
+                        disabled={submitting}
+                      >
+                        Düzenle
+                      </button>
+                      <Link
+                        className="customers-card-btn customers-card-btn--primary"
+                        to={`/musteriler/${encodeURIComponent(c.id)}`}
+                      >
+                        Detayı aç
+                      </Link>
+                    </div>
+                  </div>
+                )}
               </li>
             )
           })}

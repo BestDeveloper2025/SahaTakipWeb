@@ -80,7 +80,30 @@
   background: #fff;
 }
 
-.customers-add-input:focus {
+.customers-add-input--full {
+  display: block;
+  width: 100%;
+  flex: none;
+  margin-bottom: 12px;
+  box-sizing: border-box;
+}
+
+.customers-add-select {
+  display: block;
+  width: 100%;
+  min-height: 42px;
+  margin-bottom: 12px;
+  padding: 0.55rem 0.85rem;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  font: inherit;
+  font-size: 0.95rem;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.customers-add-input:focus,
+.customers-add-select:focus {
   outline: 2px solid rgba(30, 118, 154, 0.35);
   border-color: var(--color-primary, #1e769a);
 }
@@ -219,27 +242,26 @@
   gap: 14px;
 }
 
+.customers-card-wrap {
+  min-width: 0;
+}
+
 .customers-card {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  height: 100%;
   padding: 18px;
   border-radius: 16px;
   background: #fff;
   border: 1px solid rgba(15, 23, 42, 0.08);
   box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
-  text-decoration: none;
   color: inherit;
-  transition:
-    transform 0.12s ease,
-    box-shadow 0.12s ease,
-    border-color 0.12s ease;
+  box-sizing: border-box;
 }
 
-.customers-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.1);
-  border-color: rgba(37, 99, 235, 0.35);
+.customers-card--edit {
+  gap: 8px;
 }
 
 .customers-card-top {
@@ -265,6 +287,51 @@
   border-radius: 8px;
   padding: 2px 8px;
   flex-shrink: 0;
+}
+
+.customers-card-country {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-muted, #64748b);
+}
+
+.customers-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.customers-card-btn {
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  min-height: 36px;
+  padding: 0.4rem 0.85rem;
+  border-radius: 10px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.customers-card-btn--ghost {
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  color: #475569;
+}
+
+.customers-card-btn--primary {
+  border: none;
+  background: var(--color-primary, #1e769a);
+  color: #fff;
+}
+
+.customers-card-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
 }
 
 .customers-card-cta {

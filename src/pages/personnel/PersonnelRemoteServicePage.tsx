@@ -1,24 +1,30 @@
-import { useCallback, useEffect, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../auth/AuthContext'
 import {
   buildQuotaWarningMessage,
   createRemoteService,
   durationMinutes,
-  getCurrentDateDDMMYYYY,
+  formatDateToDDMMYYYY,
   getPersonnelCustomers,
   getRemoteUsage,
+  getTodayIsoDate,
   QUOTA_EXCEEDED_SUCCESS_MESSAGE,
   type CreateRemoteServicePayload,
   type CustomerListItem,
 } from '../../api/personnelRemoteService'
 import { getAllMachines, type MachineListItem } from '../../api/machines'
+import {
+  getActivePersonnel,
+  type ActivePersonnelListItem,
+} from '../../api/personnel'
 import { MachineSearchSelect } from '../../components/MachineSearchSelect'
 import './PersonnelRemoteServicePage.css'
 
 const emptyForm = {
   customerId: '',
   machineId: '',
+  date: getTodayIsoDate(),
   startTime: '',
   endTime: '',
   serviceDescription: '',
@@ -31,13 +37,19 @@ type SelectedPhoto = {
   previewUrl: string
 }
 
+function personnelRowId(p: ActivePersonnelListItem): string {
+  return String(p.id ?? p._id ?? '')
+}
+
 export function PersonnelRemoteServicePage() {
   const { token, userId } = useAuth()
   const [customers, setCustomers] = useState<CustomerListItem[]>([])
   const [machines, setMachines] = useState<MachineListItem[]>([])
+  const [personnel, setPersonnel] = useState<ActivePersonnelListItem[]>([])
   const [customersLoading, setCustomersLoading] = useState(true)
   const [machinesLoading, setMachinesLoading] = useState(true)
   const [form, setForm] = useState(emptyForm)
+  const [teamIds, setTeamIds] = useState<string[]>([])
   const [photos, setPhotos] = useState<SelectedPhoto[]>([])
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -47,6 +59,15 @@ export function PersonnelRemoteServicePage() {
     useState<CreateRemoteServicePayload | null>(null)
   const [pendingQuotaExceeded, setPendingQuotaExceeded] = useState(false)
 
+  const teammateOptions = useMemo(
+    () =>
+      personnel.filter((p) => {
+        const id = personnelRowId(p)
+        return id && id !== userId
+      }),
+    [personnel, userId],
+  )
+
   useEffect(() => {
     if (!token) return
     let cancelled = false
@@ -55,11 +76,13 @@ export function PersonnelRemoteServicePage() {
     Promise.all([
       getPersonnelCustomers(token),
       getAllMachines(token).catch(() => [] as MachineListItem[]),
+      getActivePersonnel(token).catch(() => [] as ActivePersonnelListItem[]),
     ])
-      .then(([customerRows, machineRows]) => {
+      .then(([customerRows, machineRows, personnelRows]) => {
         if (!cancelled) {
           setCustomers(customerRows)
           setMachines(machineRows)
+          setPersonnel(personnelRows)
         }
       })
       .catch((e) => {
@@ -80,7 +103,8 @@ export function PersonnelRemoteServicePage() {
   }, [token])
 
   const clearForm = useCallback(() => {
-    setForm(emptyForm)
+    setForm({ ...emptyForm, date: getTodayIsoDate() })
+    setTeamIds([])
     setPhotos((prev) => {
       prev.forEach((p) => URL.revokeObjectURL(p.previewUrl))
       return []
@@ -115,6 +139,12 @@ export function PersonnelRemoteServicePage() {
       if (removed) URL.revokeObjectURL(removed.previewUrl)
       return copy
     })
+  }
+
+  function toggleTeammate(id: string) {
+    setTeamIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+    )
   }
 
   const performCreate = useCallback(
@@ -168,6 +198,10 @@ export function PersonnelRemoteServicePage() {
       setError('Makina seçmelisiniz')
       return
     }
+    if (!form.date) {
+      setError('Tarih seçmelisiniz')
+      return
+    }
     if (!form.startTime) {
       setError('Başlangıç saati seçmelisiniz')
       return
@@ -186,9 +220,10 @@ export function PersonnelRemoteServicePage() {
       customerID: form.customerId,
       machineID: form.machineId,
       serviceDescription: form.serviceDescription.trim(),
-      date: getCurrentDateDDMMYYYY(),
+      date: formatDateToDDMMYYYY(form.date),
       startTime: form.startTime,
       endTime: form.endTime,
+      teamPersonnelIDs: teamIds,
     }
 
     const newEntryMinutes = durationMinutes(form.startTime, form.endTime)
@@ -213,7 +248,6 @@ export function PersonnelRemoteServicePage() {
       }
       await performCreate(request)
     } catch {
-      // Kota kontrolü başarısız olursa kaydı engelleme (mobil ile aynı).
       await performCreate(request)
     }
   }
@@ -241,8 +275,9 @@ export function PersonnelRemoteServicePage() {
       <header className="personnel-remote-head">
         <h1 className="personnel-remote-title">Yeni Uzaktan Servis</h1>
         <p className="personnel-remote-hint">
-          Müşteri için uzaktan servis kaydı oluşturun. 20 saatlik kota aşımında
-          uyarı gösterilir; kayıt sonrası yöneticinize bilgi vermeniz gerekir.
+          Müşteri için uzaktan servis kaydı oluşturun. Birlikte çalıştığınız
+          ekip arkadaşlarını da seçebilirsiniz. 20 saatlik kota aşımında uyarı
+          gösterilir.
         </p>
       </header>
 
@@ -310,7 +345,51 @@ export function PersonnelRemoteServicePage() {
           </section>
 
           <section className="personnel-remote-section">
+            <h2 className="personnel-remote-section-title">Ekip Arkadaşları</h2>
+            <p className="personnel-remote-photo-hint">
+              Opsiyonel — birlikte çalıştığınız kişileri seçin (birden fazla
+              seçilebilir). Siz otomatik olarak kayda eklenirsiniz.
+            </p>
+            {teammateOptions.length === 0 ? (
+              <p className="personnel-remote-photo-hint">
+                Seçilebilecek başka aktif personel yok.
+              </p>
+            ) : (
+              <ul className="personnel-remote-team-list">
+                {teammateOptions.map((p) => {
+                  const id = personnelRowId(p)
+                  const checked = teamIds.includes(id)
+                  return (
+                    <li key={id}>
+                      <label className="personnel-remote-team-item">
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          disabled={submitting}
+                          onChange={() => toggleTeammate(id)}
+                        />
+                        <span>{p.name}</span>
+                      </label>
+                    </li>
+                  )
+                })}
+              </ul>
+            )}
+          </section>
+
+          <section className="personnel-remote-section">
             <h2 className="personnel-remote-section-title">Servis Zamanı</h2>
+            <label className="personnel-remote-field">
+              <span className="personnel-remote-label">Tarih</span>
+              <input
+                className="personnel-remote-input"
+                type="date"
+                value={form.date}
+                onChange={(e) =>
+                  setForm((prev) => ({ ...prev, date: e.target.value }))
+                }
+              />
+            </label>
             <div className="personnel-remote-time-row">
               <label className="personnel-remote-field">
                 <span className="personnel-remote-label">Başlangıç</span>

@@ -4,6 +4,7 @@ import { apiPostJson } from './http'
 export type CustomerListItem = {
   id: string
   name: string
+  country?: string | null
   orderNumber: number
   isDeleted?: boolean
   createdAt?: string
@@ -106,12 +107,28 @@ export async function getAllCustomers(
 export async function addCustomer(
   token: string,
   name: string,
+  country: string,
 ): Promise<CustomerListItem> {
   const data = await apiPostJson<{
     message?: string
     customer: CustomerListItem
-  }>('/customer/add', token, { name })
+  }>('/customer/add', token, { name, country })
   if (!data?.customer?.id) throw new Error('Müşteri eklenemedi')
+  return data.customer
+}
+
+/** POST /customer/update */
+export async function updateCustomer(
+  token: string,
+  customerId: string,
+  newName: string,
+  country: string,
+): Promise<CustomerListItem> {
+  const data = await apiPostJson<{
+    message?: string
+    customer: CustomerListItem
+  }>('/customer/update', token, { customerId, newName, country })
+  if (!data?.customer?.id) throw new Error('Müşteri güncellenemedi')
   return data.customer
 }
 

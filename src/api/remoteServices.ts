@@ -5,6 +5,8 @@ export type RemoteServiceListItem = {
   id: string
   personnelID: string
   personnelName: string
+  teamPersonnelIDs?: string[]
+  teamPersonnelNames?: string[]
   customerID: string
   customerName: string
   machineID?: string
@@ -48,6 +50,12 @@ export async function getAllRemoteServices(
         startTime: String(row.startTime ?? ''),
         endTime: String(row.endTime ?? ''),
         photoUrls,
+        teamPersonnelIDs: Array.isArray(row.teamPersonnelIDs)
+          ? row.teamPersonnelIDs.map(String)
+          : [],
+        teamPersonnelNames: Array.isArray(row.teamPersonnelNames)
+          ? row.teamPersonnelNames.map(String)
+          : [],
         createdAt:
           typeof row.createdAt === 'string' ? row.createdAt : undefined,
         updatedAt:

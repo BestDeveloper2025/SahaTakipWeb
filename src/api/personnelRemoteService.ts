@@ -12,6 +12,8 @@ export type CreateRemoteServicePayload = {
   date: string
   startTime: string
   endTime: string
+  /** Ekip arkadaşları (current user hariç) */
+  teamPersonnelIDs?: string[]
 }
 
 export async function getPersonnelCustomers(
@@ -44,6 +46,10 @@ export async function createRemoteService(
   formData.append('date', payload.date)
   formData.append('startTime', payload.startTime)
   formData.append('endTime', payload.endTime)
+  formData.append(
+    'teamPersonnelIDs',
+    JSON.stringify(payload.teamPersonnelIDs ?? []),
+  )
   for (const photo of photos) {
     formData.append('photos', photo)
   }
@@ -54,13 +60,25 @@ export async function createRemoteService(
   )
 }
 
-/** Bugünün tarihi DD-MM-YYYY (mobil ile aynı). */
-export function getCurrentDateDDMMYYYY(): string {
+/** Date input (YYYY-MM-DD) → DD-MM-YYYY */
+export function formatDateToDDMMYYYY(isoDate: string): string {
+  const [year, month, day] = isoDate.split('-')
+  if (!year || !month || !day) return isoDate
+  return `${day}-${month}-${year}`
+}
+
+/** Bugünün tarihi YYYY-MM-DD (date input için). */
+export function getTodayIsoDate(): string {
   const today = new Date()
   const day = String(today.getDate()).padStart(2, '0')
   const month = String(today.getMonth() + 1).padStart(2, '0')
   const year = today.getFullYear()
-  return `${day}-${month}-${year}`
+  return `${year}-${month}-${day}`
+}
+
+/** Bugünün tarihi DD-MM-YYYY (mobil ile aynı). */
+export function getCurrentDateDDMMYYYY(): string {
+  return formatDateToDDMMYYYY(getTodayIsoDate())
 }
 
 export function durationMinutes(startTime: string, endTime: string): number {
@@ -105,4 +123,3 @@ export function buildQuotaWarningMessage(
 /** Kota aşımıyla kaydedildikten sonra personele gösterilecek başarı metni */
 export const QUOTA_EXCEEDED_SUCCESS_MESSAGE =
   'Uzaktan servisiniz kaydedildi. Saat sınırını aştınız; lütfen yöneticinize bilgi veriniz.'
-
